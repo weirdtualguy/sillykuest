@@ -1,0 +1,12 @@
+node_modules/
+*.zip
+*.log
+*.bak
+*.bak-*/
+.bak*/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+test-results/
+playwright-report/

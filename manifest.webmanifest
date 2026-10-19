@@ -1,0 +1,76 @@
+{
+  "id": "./index.html",
+  "name": "SillyKuest",
+  "short_name": "SillyKuest",
+  "description": "Learn Kaspa, Silverscript and covenants with a friendly ghost. Works offline.",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": [
+    "education"
+  ],
+  "start_url": "./index.html#/learn",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E8E6FF",
+  "theme_color": "#37D6B4",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Practice",
+      "url": "./index.html#/practice",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Lab",
+      "url": "./index.html#/lab",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Dictionary",
+      "short_name": "Words",
+      "url": "./index.html#/words",
+      "icons": [
+        {
+          "src": "assets/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

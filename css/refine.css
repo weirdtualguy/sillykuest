@@ -1,0 +1,127 @@
+/* SillyKuest refine layer. Loads after widgets.css so it wins ties. Theme: "Sil's post office". */
+:root { --disp: "Lilita One", var(--f); }
+
+/* display face: titles and big numbers only. Falls back to Poppins if the font is not embedded. */
+h1, h2, .wm, .sh-t, .prof-b h1, .ds-v span { font-family: var(--disp); font-weight: 400; letter-spacing: .01em; }
+
+/* tilted stickers: the independent `rotate` property composes with the existing :active transform */
+.llist .lrow:nth-child(odd), .badges .badge:nth-child(odd) { rotate: -.5deg; }
+.llist .lrow:nth-child(even), .badges .badge:nth-child(even) { rotate: .45deg; }
+
+/* You: colored stat tiles with the number as the hero */
+.dstats .ds { padding: 14px 6px 12px; border-radius: 20px; color: var(--on); box-shadow: 0 4px 0 var(--line); }
+.dstats .ds-a { background: var(--sun); rotate: -1.2deg; }
+.dstats .ds-b { background: var(--sky); rotate: .8deg; }
+.dstats .ds-c { background: var(--coral); rotate: -.6deg; }
+.dstats .ds-v { flex-direction: column; gap: 2px; }
+.dstats .ds-v span { font-size: 1.9rem; line-height: 1.05; }
+.dstats .ds-l { color: var(--on); opacity: .78; font-weight: 600; }
+
+/* You: Sil gets more solid with rank. --rk runs 0 (first rank) to 1 (top rank). */
+.prof .sil { opacity: calc(.5 + .5 * var(--rk, 1)); filter: drop-shadow(0 0 calc(14px * (1 - var(--rk, 1))) rgba(154, 140, 255, .95)); }
+
+/* ===== 2.6.0 ===== */
+
+/* answer feedback: a rubber stamp slams onto the sheet. Global motion-off rules in base.css already cancel the animation. */
+.sh-t { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sh-t > span:first-child { min-width: 0; }
+.stamp { flex: none; padding: 2px 9px 1px; border: 3px double currentColor; border-radius: 6px; font-family: var(--disp); font-size: .78rem; font-weight: 400; letter-spacing: .12em; text-transform: uppercase; line-height: 1.3; transform: rotate(-8deg); opacity: .92; animation: slam .38s var(--spring) .1s backwards; }
+@keyframes slam { 0% { transform: scale(2.6) rotate(-22deg); opacity: 0; } 65% { transform: scale(.9) rotate(-6deg); opacity: 1; } 100% { transform: scale(1) rotate(-8deg); opacity: .92; } }
+
+/* badges as postage stamps: dotted perforation ring, earned ones sit slightly crooked */
+.badge .bd-ic { width: 50px; height: 58px; margin: 3px 0 5px 3px; border-radius: 6px; outline: 2px dotted var(--ink-soft); outline-offset: 3px; }
+.badge.got .bd-ic { rotate: -4deg; }
+
+/* ===== 2.7.0 ===== */
+/* knobs: --rim is the dark-mode outline on paper surfaces, --glow is how strong the world color glows behind lessons */
+:root { --glow: 13%; }
+[data-theme="dark"] { --rim: #4F49B0; --glow: 24%; }
+
+/* lesson backdrop: one soft glow from the top in the world color (replaces the 2.6.0 patterns) */
+.player[class*="world-"] { background-image: radial-gradient(130% 52% at 50% -8%, color-mix(in srgb, var(--w) var(--glow), transparent), transparent 72%); background-repeat: no-repeat; }
+
+/* dark mode: light rim + dark ledge so paper surfaces read as raised stickers again */
+[data-theme="dark"] .card:not(.upnext):not(.ds), [data-theme="dark"] .bubble, [data-theme="dark"] .btn.alt, [data-theme="dark"] .chip, [data-theme="dark"] .icon-btn { border-color: var(--rim); }
+[data-theme="dark"] .dstats .ds { border-color: var(--line); }
+[data-theme="dark"] body { background-image: radial-gradient(120% 46% at 50% -6%, rgba(154, 140, 255, .17), transparent 68%); background-repeat: no-repeat; background-attachment: fixed; }
+
+/* ===== 2.8.0 ===== */
+/* bug-hunt lines wrap instead of scrolling sideways: the broken part is often at the end of the line */
+.bl { min-width: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.bl .ln { flex: none; }
+.bl .ct { flex: 1; min-width: 0; }
+
+/* 2.9.0 Vault Heist */
+.hx-row { display: flex; align-items: center; gap: 6px; margin: 12px 0 4px; font-family: var(--m); font-size: .84rem; }
+.hx-row .bline { flex: 1; min-width: 0; margin: 0; }
+.hx-crew { display: grid; gap: 8px; margin: 4px 0 10px; }
+.hx-tx { display: flex; align-items: center; gap: 10px; padding: 10px 12px; box-shadow: none; animation: hxin .35s var(--ease) both; }
+.hx-tx .hx-b { flex: 1; min-width: 0; display: grid; gap: 1px; }
+.hx-tx .hx-b strong { font-size: .88rem; }
+.hx-tx.thief .hx-ic { color: var(--coral); }
+.hx-st { font-size: .7rem; font-weight: 700; padding: 3px 9px; border-radius: 99px; white-space: nowrap; background: color-mix(in srgb, var(--ink) 10%, transparent); }
+.hx-tx.pass { border-color: var(--good-t); }
+.hx-tx.pass .hx-st { background: var(--good-bg); color: var(--good-t); }
+.hx-tx.fail { border-color: var(--coral); animation: hxshake .4s; }
+.hx-tx.fail .hx-st { background: var(--coral); color: #fff; }
+.hx-msg { min-height: 1.3em; margin: 4px 0 10px; font-weight: 600; font-size: .88rem; }
+.hx-go { width: 100%; }
+.hx .btn.sm { margin-top: 10px; }
+@keyframes hxin { from { opacity: 0; transform: translateY(8px); } }
+@keyframes hxshake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+@media (prefers-reduced-motion: reduce) { .hx-tx { animation: none; } }
+
+/* ===== 3.0.0 ===== */
+/* Support: card on You, footer pill on Learn, and the donate sheet */
+.support { display: flex; align-items: center; gap: 14px; padding: 14px 16px; margin-top: 18px; }
+.support .sup-ic { flex: none; width: 48px; height: 48px; display: grid; place-items: center; border: var(--b) solid var(--line); border-radius: 14px; background: var(--coral); color: var(--on); box-shadow: 0 3px 0 var(--line); rotate: -3deg; }
+.support .sup-b { flex: 1; min-width: 0; }
+.support h3 { font-size: 1.02rem; margin-bottom: 2px; }
+.support p { margin: 0; font-size: .82rem; line-height: 1.4; color: var(--ink-soft); }
+.support .btn { flex: none; }
+@media (max-width: 380px) { .support { flex-wrap: wrap; } .support .sup-b { flex-basis: calc(100% - 66px); } .support .btn { width: 100%; } }
+
+.foot-note { margin-bottom: 8px; }
+.learn .foot-note { margin-bottom: 84px; }
+.foot-note p { margin: 0 0 10px; }
+.foot-donate { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 0 16px; border: 2px solid var(--line); border-radius: 99px; background: var(--paper); color: var(--ink); font-weight: 700; font-size: .84rem; box-shadow: 0 3px 0 var(--line); }
+.foot-donate .ic { color: var(--coral); }
+.foot-donate:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--line); }
+[data-theme="dark"] .foot-donate { border-color: var(--rim); }
+
+.sup { text-align: center; }
+.sup-sil { display: grid; place-items: center; margin: 0 0 4px; }
+.sup p { margin: 0 0 12px; }
+.sup .cap { margin: 0; }
+.sup-name { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 14px 14px 14px 18px; margin: 2px 0 12px; border: 2.5px dashed var(--ink-soft); border-radius: 18px; background: var(--paper-2); color: var(--ink); text-align: left; }
+.sup-name code { min-width: 0; padding: 0; background: none; font-family: var(--disp); font-size: clamp(1.1rem, 5.4vw, 1.3rem); font-weight: 400; letter-spacing: .01em; overflow-wrap: anywhere; }
+.sup-copy { display: inline-flex; align-items: center; gap: 6px; flex: none; padding: 7px 12px 7px 10px; border: 2px solid var(--line); border-radius: 99px; background: var(--teal); color: var(--on); font-weight: 700; font-size: .82rem; box-shadow: 0 2px 0 var(--line); }
+@media (max-width: 350px) { .sup-name { flex-direction: column; align-items: stretch; text-align: center; gap: 10px; padding: 12px; } .sup-copy { justify-content: center; } }
+.sup-name:active .sup-copy { transform: translateY(1px); box-shadow: 0 1px 0 var(--line); }
+.sup-name.done { border-color: var(--good-t); }
+.sup-name.done .sup-copy { background: var(--good-bg); color: var(--good-t); border-color: var(--good-t); }
+
+/* toast with an action (update ready) */
+.toast.has-act { display: flex; align-items: center; gap: 14px; padding: 8px 8px 8px 18px; text-align: left; pointer-events: auto; }
+.toast.has-act button { flex: none; min-height: 36px; padding: 0 14px; border: 0; border-radius: 10px; background: var(--teal); color: var(--on); font-weight: 700; }
+
+/* boss fight: slip counter */
+.boss-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.slips { display: flex; align-items: center; gap: 5px; font-size: .72rem; font-weight: 700; color: var(--ink-soft); white-space: nowrap; }
+.slips span { margin-right: 2px; }
+.slips i { width: 13px; height: 13px; border-radius: 50%; border: 2px solid var(--line); background: var(--paper); transition: background .2s, transform .2s var(--spring); }
+.slips i.on { background: var(--coral); transform: scale(1.14); }
+.slips.out { color: var(--bad-t); }
+[data-theme="dark"] .slips i { border-color: var(--rim); }
+
+/* sheets and notices */
+.modal-actions .btn { white-space: nowrap; padding: 0 14px; }
+.tip.warn { border-color: var(--coral); }
+.tip.warn > span:first-child { color: var(--coral); flex: none; }
+.p-step [tabindex="-1"]:focus { outline: none; }
+
+/* boot screen: shown until the first render replaces it */
+.boot { min-height: 100dvh; display: grid; place-content: center; justify-items: center; gap: 12px; font-weight: 700; color: var(--ink-soft); }
+.boot svg { animation: bootfloat 2.4s ease-in-out infinite; }
+@keyframes bootfloat { 50% { transform: translateY(-8px); } }
+@media (prefers-reduced-motion: reduce) { .boot svg { animation: none; } }

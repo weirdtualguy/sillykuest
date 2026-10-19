@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  content:
+    name: Content and repo checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tests/validate.js
+      - run: node tests/vibe.js
+      - run: node tests/repo.js
+
+  browser:
+    name: Browser tests
+    runs-on: ubuntu-latest
+    needs: content
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/v3.js
+      - run: node tests/qtypes.js
+      - run: node tests/heist.js
+      - run: node tests/ux.js
+      - run: node tests/offline.js
+      - run: node tests/browser.js
