@@ -93,10 +93,9 @@ h1, h2, .wm, .sh-t, .prof-b h1, .ds-v span { font-family: var(--disp); font-weig
 .sup-sil { display: grid; place-items: center; margin: 0 0 4px; }
 .sup p { margin: 0 0 12px; }
 .sup .cap { margin: 0; }
-.sup-name { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 14px 14px 14px 18px; margin: 2px 0 12px; border: 2.5px dashed var(--ink-soft); border-radius: 18px; background: var(--paper-2); color: var(--ink); text-align: left; }
-.sup-name code { min-width: 0; padding: 0; background: none; font-family: var(--disp); font-size: clamp(1.1rem, 5.4vw, 1.3rem); font-weight: 400; letter-spacing: .01em; overflow-wrap: anywhere; }
-.sup-copy { display: inline-flex; align-items: center; gap: 6px; flex: none; padding: 7px 12px 7px 10px; border: 2px solid var(--line); border-radius: 99px; background: var(--teal); color: var(--on); font-weight: 700; font-size: .82rem; box-shadow: 0 2px 0 var(--line); }
-@media (max-width: 350px) { .sup-name { flex-direction: column; align-items: stretch; text-align: center; gap: 10px; padding: 12px; } .sup-copy { justify-content: center; } }
+.sup-name { display: flex; flex-direction: column; align-items: stretch; gap: 12px; width: 100%; padding: 14px 14px 14px 16px; margin: 2px 0 12px; border: 2.5px dashed var(--ink-soft); border-radius: 18px; background: var(--paper-2); color: var(--ink); text-align: left; }
+.sup-name code { min-width: 0; padding: 0; background: none; font-family: var(--m); font-size: clamp(.8rem, 3.6vw, .92rem); font-weight: 700; line-height: 1.5; word-break: break-all; }
+.sup-copy { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: none; padding: 7px 12px 7px 10px; border: 2px solid var(--line); border-radius: 99px; background: var(--teal); color: var(--on); font-weight: 700; font-size: .82rem; box-shadow: 0 2px 0 var(--line); }
 .sup-name:active .sup-copy { transform: translateY(1px); box-shadow: 0 1px 0 var(--line); }
 .sup-name.done { border-color: var(--good-t); }
 .sup-name.done .sup-copy { background: var(--good-bg); color: var(--good-t); border-color: var(--good-t); }

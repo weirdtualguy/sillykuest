@@ -109,7 +109,7 @@ button.cl:hover { background: rgba(255, 255, 255, .06); }
 .cl-say code { white-space: normal; }
 
 /* ---------- quizzes ---------- */
-.q-text { font-size: 1.15rem; line-height: 1.4; margin-bottom: 18px; font-weight: 700; letter-spacing: -.015em; }
+.q-text { font-family: var(--f); font-size: 1.15rem; line-height: 1.4; margin-bottom: 18px; font-weight: 700; letter-spacing: -.01em; }
 .q-text code { font-size: .8em; }
 .opts { display: grid; gap: 12px; }
 .opts-tf { grid-template-columns: 1fr 1fr; }

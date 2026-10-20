@@ -1,7 +1,7 @@
 /* SillyKuest service worker: cache everything on first load, then work fully offline.
    Bump VERSION when you change any file so returning users get the update (the app then offers a Reload).
    tests/repo.js checks that this list matches the files index.html loads. */
-var VERSION = 'sillykuest-3.1.0';
+var VERSION = 'sillykuest-3.1.1';
 var FILES = [
   './', 'index.html', 'manifest.webmanifest',
   'css/fonts.css', 'css/base.css', 'css/shell.css', 'css/lesson.css', 'css/widgets.css', 'css/refine.css',

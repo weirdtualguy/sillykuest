@@ -33,9 +33,9 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.log('FAIL: ' + m
   await page.evaluate(() => { window.__c = null; Object.defineProperty(navigator, 'clipboard', { value: { writeText: t => { window.__c = t; return Promise.resolve(); } }, configurable: true }); });
   await page.evaluate(() => { const b = document.querySelector('.foot-donate'); b.focus(); b.click(); });
   await page.waitForSelector('.modal .sup-name');
-  ok((await page.textContent('.sup-name code')) === donate && !!donate, 'sheet shows the donation name');
+  ok((await page.textContent('.sup-name code')) === donate && !!donate, 'sheet shows the donation address');
   await page.click('.sup-name'); await page.waitForTimeout(120);
-  ok((await page.evaluate(() => window.__c)) === donate, 'copy writes the name to the clipboard');
+  ok((await page.evaluate(() => window.__c)) === donate, 'copy writes the address to the clipboard');
   ok((await page.textContent('.sup-copy')).trim() === 'Copied', 'copy button confirms');
   ok(/Copied/.test(await page.textContent('.sr[role=status]')), 'copy is announced to screen readers');
   await page.evaluate(() => { Object.defineProperty(navigator, 'clipboard', { value: { writeText: () => Promise.reject(new Error('no')) }, configurable: true }); document.execCommand = () => false; });

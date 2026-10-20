@@ -19,26 +19,26 @@
   function head(t, sub) { return h('div', { class: 'sh' }, h('h1', t), sub ? h('p', { class: 'sub' }, sub) : null); }
 
   /* ========================================================== SUPPORT */
-  /* Donate sheet: shows the Kaspa name from SK.DONATE (js/core.js) with a one-tap copy. */
+  /* Donate sheet: shows the Kaspa address from SK.DONATE (js/core.js) with a one-tap copy. */
   SK.supportSheet = function () {
     if (!SK.DONATE) return;
     var label = h('span', { class: 'sup-copy' }), timer = null;
     function paint(done) { label.innerHTML = SK.icon(done ? 'check' : 'copy', 18) + '<span>' + (done ? 'Copied' : 'Copy') + '</span>'; }
     paint(false);
-    var chip = h('button', { type: 'button', class: 'sup-name', 'aria-label': 'Copy ' + SK.DONATE }, h('code', SK.DONATE), label);
+    var chip = h('button', { type: 'button', class: 'sup-name', 'aria-label': 'Copy the Kaspa address' }, h('code', SK.DONATE), label);
     chip.addEventListener('click', function () {
       SK.copy(SK.DONATE).then(function () {
-        chip.classList.add('done'); paint(true); SK.sfx('ok'); SK.announce('Copied ' + SK.DONATE);
+        chip.classList.add('done'); paint(true); SK.sfx('ok'); SK.announce('Copied the Kaspa address');
         clearTimeout(timer); timer = setTimeout(function () { chip.classList.remove('done'); paint(false); }, 1800);
-      }, function () { SK.toast('Could not copy. Select the name and copy it by hand.'); });
+      }, function () { SK.toast('Could not copy. Select the address and copy it by hand.'); });
     });
     SK.modal({
       title: 'Support SillyKuest',
       body: h('div', { class: 'sup' },
         h('div', { class: 'sup-sil', html: SK.sil('yay', 84) }),
-        h('p', 'SillyKuest is free and open source, with no ads and no tracking. If it helped you, you can send a few KAS to this Kaspa name.'),
+        h('p', 'SillyKuest is free and open source, with no ads and no tracking. If it helped you, you can send a few KAS to this Kaspa address.'),
         chip,
-        h('p', { class: 'cap' }, 'Paste it as the recipient in a wallet that supports Kaspa names, and check that the name matches before you confirm.')),
+        h('p', { class: 'cap' }, 'Paste it as the recipient in your wallet, and check that the first and last few characters match before you confirm.')),
       actions: [{ label: 'Close', kind: 'alt' }]
     });
   };

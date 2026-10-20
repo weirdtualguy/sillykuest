@@ -2,6 +2,12 @@
 
 Versions follow `SK.version` in `js/core.js`. The service worker cache name and `package.json` must match it (`node tests/repo.js` checks).
 
+## 3.1.1 - 2026-10-20
+
+### Changed
+- **Donations go to a raw Kaspa address** instead of a Kaspa name, in the Support sheet and the README. The sheet shows the full address in small monospaced text with a Copy button under it, and tells people to check the first and last few characters in their wallet. `npm test` now checks the address checksum, so a mistyped or cut-off address fails the build.
+- **Question text uses the plain body font** (Poppins) instead of the display font, in lessons, boss fights, Vibe Check and Vault Heist.
+
 ## 3.1.0 - 2026-10-20
 
 Gentler onboarding. World 1 now teaches one new idea per lesson, and a real term appears only after the player has done something with it.

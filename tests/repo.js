@@ -59,7 +59,19 @@ ok(!all.some(f => /^(SILLY-HANDOFF|IMPLEMENTATION_STATE\d*|CHANGES)\.md$/.test(f
 ok(/needs:\s*check/.test(read('.github/workflows/pages.yml')), 'pages.yml deploys without waiting for the checks job');
 const donate = (core.match(/SK\.DONATE = '([^']*)'/) || [])[1];
 ok(!!donate, 'SK.DONATE is empty');
-ok(donate && read('README.md').indexOf(donate) >= 0, 'README.md does not show the donation name ' + donate);
+ok(donate && read('README.md').indexOf(donate) >= 0, 'README.md does not show the donation address ' + donate);
+/* a Kaspa address carries a checksum: catch a mistyped or truncated donation address */
+(function () {
+  const CS = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l', G = [0x98f2bc8e61n, 0x79b76d99e2n, 0xf33e5fb3c4n, 0xae2eabe2a8n, 0x1e4f43e470n];
+  const m = /^(kaspa|kaspatest):([a-z0-9]+)$/.exec(donate || '');
+  ok(!!m, 'SK.DONATE is not a kaspa: or kaspatest: address');
+  if (!m) return;
+  const vals = [...m[1]].map(c => c.charCodeAt(0) & 31).concat([0], [...m[2]].map(c => CS.indexOf(c)));
+  ok(vals.every(v => v >= 0), 'SK.DONATE has a character a Kaspa address cannot contain');
+  let c = 1n;
+  vals.forEach(d => { const c0 = c >> 35n; c = ((c & 0x07ffffffffn) << 5n) ^ BigInt(d); G.forEach((g, i) => { if ((c0 >> BigInt(i)) & 1n) c ^= g; }); });
+  ok((c ^ 1n) === 0n, 'SK.DONATE fails the Kaspa address checksum (mistyped or cut short?)');
+})();
 const fonts = read('css/fonts.css'), tp = read('THIRD_PARTY.md');
 [...fonts.matchAll(/font-family:"([^"]+)"/g)].map(m => m[1]).filter((v, i, a) => a.indexOf(v) === i).forEach(n => ok(tp.indexOf(n) >= 0, 'THIRD_PARTY.md does not credit the embedded font ' + n));
 

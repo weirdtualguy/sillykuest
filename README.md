@@ -79,13 +79,13 @@ New lessons, fixes and corrections are welcome. Read [CONTRIBUTING.md](CONTRIBUT
 
 ## Support
 
-SillyKuest is free and has no ads. If it helped you, you can send some KAS to the Kaspa name:
+SillyKuest is free and has no ads. If it helped you, you can send some KAS to this Kaspa address:
 
 ```
-weirdtualguy.k
+kaspa:qp26rvw8t7qxl2kyu70us2tptz3u4p09f6h6l4k4gxlc40uau2m0xvjjw9whl
 ```
 
-The same name is behind the **Donate** button in the app (You tab). Check that the name matches in your wallet before you confirm.
+The same address is behind the **Donate** button in the app (You tab). Check that the first and last few characters match in your wallet before you confirm.
 
 ## Accuracy
 
