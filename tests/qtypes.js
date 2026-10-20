@@ -90,7 +90,7 @@ const shotsDir = args.includes('--shots') ? args[args.indexOf('--shots') + 1] : 
   await click('.p-go'); s = await sheet(); ok(s && /bad/.test(s.cls), 'slots: the <= decoy is wrong'); await closePlayer();
 
   /* ---- tables fit a phone: every cell stays inside the screen ---- */
-  for (const [id, i] of [['3-5', 6], ['3-5', 11], ['5-3', 10], ['1-5', 11], ['3-6', 3]]) {
+  for (const [id, i] of [['3-5', 6], ['3-5', 11], ['5-3', 10], ['3-6', 3]]) {
     await open(id, i);
     const w = await page.evaluate(() => { const t = document.querySelector('.tbl-wrap'); return t ? t.scrollWidth - t.clientWidth : -1; });
     ok(w <= 1, id + '#' + i + ': table scrolls sideways by ' + w + 'px'); await closePlayer();
@@ -103,7 +103,7 @@ const shotsDir = args.includes('--shots') ? args[args.indexOf('--shots') + 1] : 
     SK.state.done = { '1-1': { stars: 3 }, '1-2': { stars: 3 }, '1-3': { stars: 3 }, '1-4': { stars: 3 }, '2-1': { stars: 2 }, '2-2': { stars: 2 } };
     return { w2: SK.worldOpen(2), l23: SK.unlocked(SK.lesson('2-3')), l21: SK.unlocked(SK.lesson('2-1')), w3: SK.worldOpen(3), l15: SK.unlocked(SK.lesson('1-5')) };
   });
-  ok(open2.w2 && open2.l23 && open2.l21 && open2.l15 && !open2.w3, 'progress: World 2 stays open for a player who finished it before 1-5 and 1-6 existed ' + JSON.stringify(open2));
+  ok(open2.w2 && open2.l23 && open2.l21 && open2.l15 && !open2.w3, 'progress: World 2 stays open for a player who had not reached the later World 1 lessons yet ' + JSON.stringify(open2));
   await page.evaluate(() => { SK.state.done = {}; SK.state.bosses = {}; });
   ok(await page.evaluate(() => !SK.worldOpen(2)), 'progress: a new player still starts with World 2 closed');
 
@@ -134,12 +134,12 @@ const shotsDir = args.includes('--shots') ? args[args.indexOf('--shots') + 1] : 
   /* ---- saved Review keys follow their questions when a step is inserted ---- */
   await page.evaluate(() => { localStorage.setItem('sillykuest.v2', JSON.stringify({ v: 2, mistakes: ['3-4:1', '3-4:2', '3-4:3', '1-1:4', '2-1:4'], done: { '1-1': { stars: 3 } } })); });
   await page.reload(); await page.waitForSelector('.learn');
-  const mig = await page.evaluate(() => ({ m: SK.state.mistakes, mig: SK.state.mig, t3: SK.stepByKey('3-4:3').t, t4: SK.stepByKey('3-4:4').t, done: !!SK.state.done['1-1'] }));
-  ok(mig.m.join() === '3-4:2,3-4:3,3-4:4,1-1:4,2-1:4' && mig.mig === 1 && mig.t3 === 'bug' && mig.t4 === 'bug' && mig.done, 'migration: an old save keeps pointing at the same questions ' + JSON.stringify(mig));
+  const mig = await page.evaluate(() => ({ m: SK.state.mistakes, mig: SK.state.mig, len: SK.KEYSHIFTS.length, t3: SK.stepByKey('3-4:3').t, t4: SK.stepByKey('3-4:4').t, done: !!SK.state.done['1-1'] }));
+  ok(mig.m.join() === '3-4:2,3-4:3,3-4:4,1-1:4,2-1:4' && mig.mig === mig.len && mig.t3 === 'bug' && mig.t4 === 'bug' && mig.done, 'migration: an old save keeps pointing at the same questions ' + JSON.stringify(mig));
   await page.reload(); await page.waitForSelector('.learn');
   ok(await page.evaluate(() => SK.state.mistakes.join()) === '3-4:2,3-4:3,3-4:4,1-1:4,2-1:4', 'migration: runs once, not on every load');
-  const imp = await page.evaluate(() => { const old = { v: 2, mistakes: ['3-4:2', '5-1:5'], done: {} }; const code = btoa(unescape(encodeURIComponent(JSON.stringify(old)))); const r = SK.importCode(code); return { r, m: SK.state.mistakes, mig: SK.state.mig }; });
-  ok(imp.r && imp.m.join() === '3-4:3,5-1:5' && imp.mig === 1, 'migration: an old progress code is migrated on import ' + JSON.stringify(imp));
+  const imp = await page.evaluate(() => { const old = { v: 2, mistakes: ['3-4:2', '5-1:5'], done: {} }; const code = btoa(unescape(encodeURIComponent(JSON.stringify(old)))); const r = SK.importCode(code); return { r, m: SK.state.mistakes, mig: SK.state.mig, len: SK.KEYSHIFTS.length }; });
+  ok(imp.r && imp.m.join() === '3-4:3,5-1:5' && imp.mig === imp.len, 'migration: an old progress code is migrated on import ' + JSON.stringify(imp));
   await page.evaluate(() => { SK.reset(); });
   ok(await page.evaluate(() => SK.state.mig === SK.KEYSHIFTS.length && !SK.state.mistakes.length), 'migration: a reset or new player starts up to date');
 

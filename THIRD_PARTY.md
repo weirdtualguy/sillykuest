@@ -11,7 +11,7 @@ Both are licensed under the SIL Open Font License 1.1, reproduced below.
 Copyright notices as published upstream:
 
 - Poppins: Copyright 2020 The Poppins Project Authors (https://github.com/itfoundry/Poppins)
-- Lilita One: Copyright 2011 Juan Montoreano (juan@remolacha.com.uy)
+- Lilita One: Copyright (c) 2011 Juan Montoreano (juan@remolacha.biz), with Reserved Font Names "Lilita One"
 
 To change a font, replace the `@font-face` rules in `css/fonts.css`, change the first name in `--f` (or `--disp`) in `css/base.css` / `css/refine.css`, and update this file.
 

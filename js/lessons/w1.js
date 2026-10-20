@@ -1,4 +1,4 @@
-/* World 1: Envelope Town. Kaspa basics with zero code. */
+/* World 1: Envelope Town. Kaspa basics with zero code. One new idea per lesson, and a real term only after the player has done something with it. */
 (function () {
   var SK = window.SK;
 
@@ -30,52 +30,80 @@
   });
 
   SK.addLesson({
-    id: '1-2', title: 'Envelopes with rules', min: 5,
-    blurb: 'A lock checks who is opening. A covenant also checks what happens next.',
+    id: '1-2', title: 'Envelopes with locks', min: 4,
+    blurb: 'A key lock asks one question: who is opening? Try it with and without the key.',
     steps: [
-      { t: 'say', m: 'hi', x: 'A normal envelope has a lock. Only someone with the right key can open it. That key check is called a **signature**.\n\nBut once it’s open, the owner can do **anything** with the coins. Send them anywhere, no questions asked.' },
-      { t: 'say', m: 'think', x: 'What if an envelope could also say: “You may open me, but the new envelopes must look the way I say”?\n\nThat’s a rule about the **future**. Let’s see why it matters.' },
-      { t: 'widget', w: 'gate', gate: true, x: 'Try the same spends under two kinds of lock.' },
-      { t: 'reveal', id: 'covenant', term: 'Covenant', plain: 'A rule stapled to an envelope that says what the next envelopes must look like.',
-        x: 'A covenant doesn’t only ask **who** is opening the envelope. It checks the **whole transaction** doing the opening: where the money goes, how much, and what locks the new envelopes carry.' },
-      { t: 'explore', x: 'A covenant can look at quite a lot. Tap to see what.', items: [
-        { icon: 'envelope', h: 'The new envelopes (outputs)', x: 'How many there are, and what each one holds.' },
+      { t: 'say', m: 'hi', x: 'In the last lesson you opened your own envelope and sent coins to Sam. What stops a stranger from opening it too?\n\nEvery envelope has a **lock**. Yours opens with your key.' },
+      { t: 'widget', w: 'keylock', gate: true, x: 'Try to open this envelope. First without the key, then with it.' },
+      { t: 'reveal', term: 'Signature', plain: 'A mark that only your key can make. It proves the person opening the envelope is the one who holds the key.',
+        x: 'Your wallet makes a signature for every spend. The lock checks it, and a valid signature opens the envelope.' },
+      { t: 'mc', q: 'You try to open the envelope without its key. What happens?',
+        opts: ['The lock stays shut', 'It opens anyway', 'The coins disappear'], a: 0,
+        why: 'No key, no opening. That is what a lock is for.' },
+      { t: 'say', m: 'think', x: 'So a key lock asks **one** question: who is opening this?\n\nNow look at what it did **not** ask. Once your key turned, you could send the coins anywhere, even to Mallory. The lock had no say in where the coins went next.' },
+      { t: 'tf', b: 1, q: 'Once the key has opened an envelope, a plain key lock still checks where the coins go.', a: false,
+        why: 'A key lock only asks who is opening. After that, the owner can send the coins anywhere.' },
+      { t: 'match', q: 'Match each moment to what the lock does.', pairs: [
+        ['No key', 'The lock stays shut'], ['The right key', 'The envelope opens'], ['Where the coins go next', 'The lock never asks']
+      ], why: 'A key lock checks one thing: who is opening. It has no opinion about what happens after.' },
+      { t: 'say', m: 'yay', x: 'That gap is what the next lesson is about. What if a lock **could** care where the coins go?' }
+    ]
+  });
+
+  SK.addLesson({
+    id: '1-3', title: 'A lock that checks the spend', min: 5,
+    blurb: 'A key lock only asks who. This lock also checks where the coins go.',
+    steps: [
+      { t: 'say', m: 'think', x: 'A key lock asks **who** is opening. What if an envelope could also say:\n\n“You may open me, but the new envelopes must look the way I say.”\n\nThat is a rule about the **future**. Let’s see why it matters.' },
+      { t: 'widget', w: 'gate', gate: true, plain: true, x: 'Try the same spends under two kinds of lock.' },
+      { t: 'reveal', term: 'Covenant', plain: 'A rule stapled to an envelope that says what the next envelopes must look like.',
+        x: 'A covenant doesn’t only ask **who** is opening the envelope. It checks the **whole spend**: where the money goes, how much, and what lock each new envelope carries.' },
+      { t: 'mc', q: 'In the toy, the covenant blocked a spend you had signed. Why?',
+        opts: ['The new envelopes broke its rule', 'Your key did not fit', 'The envelope was empty'], a: 0,
+        why: 'Your signature was fine. The covenant looked at where the money would go, and said no.' },
+      { t: 'explore', x: 'A covenant can look at quite a lot of the spend. Tap to see what.', items: [
+        { icon: 'envelope', h: 'The new envelopes', x: 'How many there are, and what each one holds.' },
         { icon: 'coin', h: 'The amounts', x: 'How much goes where.' },
-        { icon: 'lock', h: 'The new locks', x: 'The successors’ scripts: are they the same covenant, a plain key, something else?' },
-        { icon: 'search', h: 'The envelopes being opened (inputs)', x: 'Which ones are spent together, and how much they hold.' },
-        { icon: 'info', h: 'Other transaction fields', x: 'Lock time, payload and more. This ability to look at the transaction is called [[introspection]].' }
+        { icon: 'lock', h: 'The new locks', x: 'What lock each new envelope carries: the same rule again, a plain key, something else?' },
+        { icon: 'search', h: 'The envelopes being opened', x: 'Which ones are opened together, and how much they hold.' },
+        { icon: 'info', h: 'Other details of the spend', x: 'Lock time, a note attached to the spend, and more.' }
       ] },
+      { t: 'reveal', term: 'Introspection', plain: 'Looking at the spend. The rule reads the details of the spend it guards before it lets it through.',
+        x: 'Every covenant runs on this ability: looking at the spend it is guarding.',
+        pro: { h: 'The precise version', x: 'A covenant is a spending condition that uses KIP-17 and KIP-20 introspection opcodes to constrain the properties, outputs and templates of the spending transaction.' } },
+      { t: 'tf', b: 1, q: 'A covenant can require that a certain amount goes to a certain person.', a: true,
+        why: 'How much goes where is exactly what a covenant can look at.' },
       { t: 'mc', b: 1, q: 'How is a covenant different from a plain signature lock?',
-        opts: ['It also constrains the spending transaction itself: outputs, amounts, scripts', 'It makes the spender pay gas in a second currency', 'It runs the contract on a separate computer off-chain', 'It makes the envelope impossible to open'], a: 0,
+        opts: ['It also checks the spend: where the coins go and how much', 'It makes the spender pay a second fee', 'It runs the rule on a separate computer', 'It makes the envelope impossible to open'], a: 0,
         why: 'A plain lock checks who is spending. A covenant also constrains what the spend may do.' },
-      { t: 'tf', q: 'A covenant can require that a certain amount goes to a certain person.', a: true,
-        why: 'Output amounts and output locks are exactly what a covenant can inspect.' },
-      { t: 'sort', b: 1, q: 'Who can check this: a plain key lock, or only a covenant?', buckets: ['A plain key lock can', 'Only a covenant can'], items: [
-        { t: 'Did the owner sign this spend?', b: 0, why: 'Signatures are all a plain lock checks.' },
-        { t: 'Does Alice receive at least 5 KAS?', b: 1, why: 'That is about the outputs, so it needs a covenant.' },
-        { t: 'Does the new envelope carry the same rule?', b: 1, why: 'Looking at a successor’s lock is covenant territory.' },
-        { t: 'Is this signature valid for this key?', b: 0, why: 'A plain key lock does exactly this.' },
-        { t: 'Are there exactly two outputs?', b: 1, why: 'Counting outputs means inspecting the transaction.' }
-      ], why: 'Plain locks check the signer. Covenants check the transaction.' },
       { t: 'say', m: 'yay', x: 'Covenant = a lock **plus** a rule about the future.\n\nHold on to that. The rest of this quest is variations on it.' }
     ]
   });
 
   SK.addLesson({
-    id: '1-3', title: 'The sticky note inside', min: 6,
+    id: '1-4', title: 'The sticky note inside', min: 7,
     blurb: 'Where a covenant keeps its memory, and why fingerprints change but family badges don’t.',
     steps: [
+      { t: 'say', m: 'hi', x: 'Welcome back! Before we give envelopes a memory, a quick look back at the two kinds of lock.' },
+      { t: 'say', m: 'think', x: 'Here is the trick for the next cards. A covenant can do **everything** a key lock does, and more. So ask yourself: does this need a look at the spend, or only at the key?' },
+      { t: 'sort', b: 1, q: 'Who can check this: a plain key lock, or only a covenant?', buckets: ['A plain key lock can', 'Only a covenant can'], items: [
+        { t: 'Did the owner sign this spend?', b: 0, why: 'Checking the signature is all a plain key lock does.' },
+        { t: 'Does Alice receive at least 5 KAS?', b: 1, why: 'That is about where the coins go, so it needs a rule that looks at the spend.' },
+        { t: 'Does the new envelope carry the same rule?', b: 1, why: 'Looking at the lock on a new envelope is covenant territory.' },
+        { t: 'Is this signature valid for this key?', b: 0, why: 'A plain key lock does exactly this.' },
+        { t: 'Are there exactly two new envelopes?', b: 1, why: 'Counting the new envelopes means looking at the spend.' }
+      ], why: 'Plain locks check the signer. Covenants check the spend.' },
       { t: 'say', m: 'hi', x: 'Many covenants need memory: a counter, a balance, who owns what. But envelopes can’t be edited.\n\nSo where does the memory live?' },
       { t: 'say', m: 'think', x: 'Inside the envelope there’s a **sticky note**. That’s really the script. The memory (the **state**) is written on that note.\n\nOn the outside, the envelope shows a **fingerprint**: a short code computed from what’s inside. Change the note and the fingerprint changes too.' },
       { t: 'widget', w: 'fingerprint', gate: true, x: 'Spend this counter envelope three times. Watch the two codes.',
         pro: { h: 'what “hash” means', x: 'A hash function squeezes any data into a fixed-size fingerprint. The same input always gives the same fingerprint, and a tiny change gives a completely different one. The codes in this toy are for illustration only, not real BLAKE2b.' } },
       { t: 'reveal', id: 'p2sh', term: 'P2SH', plain: 'The fingerprint on the outside of the envelope: a hash of the script and sticky note inside.',
-        x: 'It stands for Pay-to-Script-Hash. The outside only shows the hash. The script itself, with its state, is revealed when you open the envelope.' },
+        x: 'It stands for Pay-to-Script-Hash. The outside only shows the hash. The script itself, with its state, is called the **redeem script**, and it is revealed when you open the envelope.' },
       { t: 'reveal', id: 'covenant-id', term: 'Covenant ID', plain: 'A badge Kaspa stamps on every envelope in the family, so the family stays recognisable while fingerprints change.',
         x: 'Fingerprints change every time the state does. The covenant ID doesn’t. Kaspa itself keeps track of it, which gives a covenant a stable identity.' },
       { t: 'mc', b: 1, q: 'A covenant’s state changes from 3 to 4. What changes on the outside of the envelope?',
-        opts: ['Its script public key (the P2SH hash)', 'Its covenant ID', 'Nothing: state lives off-chain', 'The Kaspa block time'], a: 0,
-        why: 'State is encoded in the redeem script. New state means a new script hash, so a new script public key. The covenant ID stays.' },
+        opts: ['Its fingerprint (the P2SH hash)', 'Its covenant ID', 'Nothing: state lives off-chain', 'The Kaspa block time'], a: 0,
+        why: 'State is encoded in the redeem script. New state means a new script hash, so a new fingerprint on the outside. The covenant ID stays.' },
       { t: 'tf', b: 1, q: 'The covenant ID changes every time the state changes.', a: false,
         why: 'The covenant ID is the stable part. The fingerprint (script hash) is what changes.' },
       { t: 'fill', q: 'Fill in the blank.', text: 'State lives in the ___ script of a P2SH envelope.', chips: ['redeem', 'coinbase', 'account', 'genesis'], a: ['redeem'],
@@ -87,7 +115,7 @@
   });
 
   SK.addLesson({
-    id: '1-4', title: 'Meet Toccata', min: 6,
+    id: '1-5', title: 'Meet Toccata', min: 6,
     blurb: 'The upgrade behind it all, and the new envelope form it introduced.',
     steps: [
       { t: 'say', m: 'hi', x: 'You’ve met the big ideas. Now let’s name the upgrade that made them real: **Toccata**, activated in June 2026.\n\nIt is [[utxo|UTXO]]-native. There is no global mutable state, just envelopes with rules.' },
@@ -116,40 +144,70 @@
   });
 
   SK.addLesson({
-    id: "1-5", title: "Reading an address", min: 6,
-    blurb: "What the text on a wallet screen really says, and why a covenant’s address keeps changing.",
+    id: '1-6', title: 'Reading an address', min: 5,
+    blurb: 'What the text on a wallet screen really says, and why a covenant’s address keeps changing.',
     steps: [
-      {"t":"say","m":"hi","x":"Wallets and explorers show text like `kaspa:q…` or `kaspa:p…`. That is not what the chain stores.\n\nThe chain stores the lock itself, the `script_public_key`. The **address** is the label written on the outside flap of the envelope."},
-      {"t":"reveal","id":"address","term":"Address","plain":"The label on the outside of an envelope: easy to read and copy, and tied to one network so it cannot be used on the wrong one.","x":"It has a network prefix, a colon, and an encoded body."},
-      {"t":"explore","x":"Tap each part of an address.","items":[{"icon":"envelope","h":"Network prefix","x":"The text before the colon: `kaspa` for mainnet, `kaspatest` for testnets. It also feeds the checksum."},{"icon":"link","h":"The colon","x":"One `:` separates the prefix from the body. An address with no colon is rejected for a missing prefix."},{"icon":"code","h":"The body","x":"Written with 32 letters and digits. It holds a version byte, the payload, and an 8-character checksum."}],"pro":{"h":"How the body is built","x":"The version byte and payload are regrouped into 5-bit values and written with the alphabet `qpzry9x8gf2tvdw0s3jn54khce6mua7l`. The checksum is a 40-bit code that also covers the prefix."}},
-      {"t":"mc","b":1,"q":"You paste a testnet address into a mainnet wallet and it is rejected. Why?","opts":["The checksum covers the network prefix","Testnet coins are a different token","The wallet cannot read base-32","Testnet addresses expire"],"a":0,"why":"The prefix is a checksum input. The same key gives a different string on each network, and a wrong-network paste fails the check."},
-      {"t":"say","m":"think","x":"The first byte inside the body is the **version byte**. Only three values exist, and they decide what the address stands for."},
-      {"t":"table","cols":["Version byte","What the address holds","Starts with (mainnet)"],"rows":[["0x00","A 32-byte Schnorr public key","kaspa:q"],["0x01","A 33-byte ECDSA public key","kaspa:q"],["0x08","A 32-byte script hash (P2SH)","kaspa:p"]],"pro":{"h":"Why q and p","x":"Version 8 starts with the 5-bit group `00001`, which is the letter `p`. Versions 0 and 1 both start with `00000`, the letter `q`."}},
-      {"t":"mc","b":1,"q":"A covenant output is paid to which kind of address?","opts":["A script-hash address, `kaspa:p…`","A Schnorr key address, `kaspa:q…`","An ECDSA key address","A special covenant prefix"],"a":0,"why":"Stateful covenants are [[p2sh|P2SH]] outputs, so their addresses use version 8."},
-      {"t":"say","m":"think","x":"A stateful covenant changes its state on every spend, and that state sits inside the script that gets hashed. So the output’s address **changes on every spend**.\n\nThe stable identity is the Covenant ID, and it is not part of any address."},
-      {"t":"tf","b":1,"q":"An address contains the amount of KAS to send.","a":false,"why":"The string carries no amount, no Covenant ID and no state. It only points at a lock."},
-      {"t":"sort","b":1,"q":"Which kind of address does each lock use?","buckets":["Key address (kaspa:q…)","Script-hash address (kaspa:p…)"],"items":[{"t":"Pay one person’s Schnorr key","b":0,"why":"A plain key lock is version 0."},{"t":"A Counter covenant cell","b":1,"why":"Covenant outputs are P2SH."},{"t":"A pot that releases after a timeout","b":1,"why":"A real script gets an address by being wrapped in P2SH."},{"t":"Change sent back to a plain wallet key","b":0,"why":"A single-key lock maps to a key address."}],"why":"Plain key locks use version 0 and start with q. Anything that runs a script is wrapped in P2SH, version 8, and starts with p."},
-      {"t":"say","m":"calm","x":"Wallets turn an address into lock bytes and back. Sizes below include the 2-byte script version."},
-      {"t":"table","cols":["Address version","Lock bytes in the envelope","Size"],"rows":[["0x00 key","0x20, the 32-byte key, 0xac","36 bytes"],["0x08 script hash","0xaa, 0x20, the 32-byte hash, 0x87","37 bytes"]]},
-      {"t":"mc","q":"Can an arbitrary script, with no wrapper, be written as an address?","opts":["No: only standard locks map to addresses, so wrap it in P2SH","Yes, using version 0","Yes, using version 1","Yes, using the prefix kaspadev"],"a":0,"why":"Only the standard locks map back to one address. That is why a covenant’s logic never shows in its address: the address only commits to the script’s hash."},
-      {"t":"match","b":1,"q":"Match each prefix to its network.","pairs":[["kaspa","Mainnet"],["kaspatest","Every testnet"],["kaspasim","Simnet (local simulation)"],["kaspadev","Devnet (local development)"]],"why":"One prefix covers all testnets, so an address cannot tell testnet-10 from testnet-11."},
-      {"t":"say","m":"yay","x":"Now you can read an address: network, version, payload. Next time you see `kaspa:p…`, you know a script hash sits behind it."}
+      { t: 'say', m: 'hi', x: 'Wallets and explorers show text like `kaspa:q…` or `kaspa:p…`. That is not what the chain stores.\n\nThe chain stores the lock itself. The text you see is a label written on the outside flap of the envelope.',
+        pro: { h: 'What the chain stores', x: 'The chain stores the lock itself, called the `script_public_key`. The text on a wallet screen is a readable way to write a standard lock.' } },
+      { t: 'reveal', term: 'Address', plain: 'The label on the outside of an envelope: easy to read and copy, and tied to one network so it cannot be used on the wrong one.',
+        x: 'It has a network prefix, a colon, and an encoded body.' },
+      { t: 'explore', x: 'Tap each part of an address.', items: [
+        { icon: 'envelope', h: 'Network prefix', x: 'The text before the colon says which network the address is for: `kaspa` for the real network, `kaspatest` for test networks. It is part of the check code, so an address from the wrong network gets rejected.' },
+        { icon: 'link', h: 'The colon', x: 'One `:` separates the prefix from the rest. An address with no colon is rejected for a missing prefix.' },
+        { icon: 'code', h: 'The body', x: 'The rest of the text, written with 32 letters and digits. It holds the kind of lock, what it points at, and a short check code that catches typos.' }
+      ], pro: { h: 'How the body is built', x: 'The body is a version byte, then the payload (a key or a script hash), then an 8-character checksum. The version byte and payload are regrouped into 5-bit values and written with the alphabet `qpzry9x8gf2tvdw0s3jn54khce6mua7l`. The checksum is a 40-bit code that also covers the prefix.' } },
+      { t: 'mc', q: 'Which part of `kaspa:q…` tells you which network it is for?',
+        opts: ['The text before the colon', 'The last letter', 'The amount you are sending'], a: 0,
+        why: 'The prefix names the network: `kaspa` for the real one, `kaspatest` for test networks.' },
+      { t: 'say', m: 'think', x: 'Right after the colon comes a letter that tells you what kind of lock is behind the address.\n\n`q` means a **key**: one person’s key. `p` means a **script**: a lock that runs a rule, like a covenant.',
+        pro: { h: 'The version byte', x: 'The first byte inside the body is the version byte. Only three values exist:\n\n`0x00`: a 32-byte Schnorr public key, shown as `kaspa:q…`\n`0x01`: a 33-byte ECDSA public key, shown as `kaspa:q…`\n`0x08`: a 32-byte script hash (P2SH), shown as `kaspa:p…`\n\nVersion 8 starts with the 5-bit group `00001`, which is the letter `p`. Versions 0 and 1 both start with `00000`, the letter `q`.' } },
+      { t: 'mc', b: 1, q: 'A covenant output is paid to which kind of address?',
+        opts: ['A script-hash address, `kaspa:p…`', 'A key address, `kaspa:q…`', 'A special covenant prefix'], a: 0,
+        why: 'Stateful covenants are [[p2sh|P2SH]] outputs, so the address shows a script hash and starts with `p`.' },
+      { t: 'say', m: 'think', x: 'A stateful covenant changes its state on every spend, and that state sits inside the script that gets hashed. So the output’s address **changes on every spend**.\n\nThe stable identity is the Covenant ID, and it is not part of any address.',
+        pro: { h: 'What the chain stores for each kind', x: 'Wallets turn an address into lock bytes and back. Sizes include the 2-byte script version.\n\n`0x00` key address: `0x20`, the 32-byte key, `0xac` (36 bytes)\n`0x08` script-hash address: `0xaa`, `0x20`, the 32-byte hash, `0x87` (37 bytes)\n\nOnly these standard locks map back to one address, so an arbitrary script has to be wrapped in P2SH first. That is why a covenant’s logic never shows in its address: the address only commits to the script’s hash.' } },
+      { t: 'tf', b: 1, q: 'An address contains the amount of KAS to send.', a: false,
+        why: 'The string carries no amount, no Covenant ID and no state. It only points at a lock.' },
+      { t: 'sort', b: 1, q: 'Which kind of address does each lock use?', buckets: ['Key address (kaspa:q…)', 'Script-hash address (kaspa:p…)'], items: [
+        { t: 'Pay one person’s key', b: 0, why: 'A plain key lock gets a key address.' },
+        { t: 'A counter covenant envelope', b: 1, why: 'Covenant outputs are P2SH.' },
+        { t: 'A pot that releases after a timeout', b: 1, why: 'A real script gets an address by being wrapped in P2SH.' },
+        { t: 'Change sent back to a plain wallet key', b: 0, why: 'A single-key lock maps to a key address.' }
+      ], why: 'A plain key lock gets a key address and starts with q. Anything that runs a script is wrapped in P2SH and starts with p.' },
+      { t: 'match', b: 1, q: 'Match each prefix to its network.', pairs: [
+        ['kaspa', 'Mainnet'], ['kaspatest', 'Every testnet'], ['kaspasim', 'Simnet (local simulation)'], ['kaspadev', 'Devnet (local development)']
+      ], why: 'One prefix covers all testnets, so an address cannot tell testnet-10 from testnet-11.' },
+      { t: 'say', m: 'yay', x: 'Now you can read an address: the network, the kind of lock, and what it points at. Next time you see `kaspa:p…`, you know a script hash sits behind it.' }
     ]
   });
 
   SK.addLesson({
-    id: "1-6", title: "Sompi, mass and the DAA clock", min: 5,
-    blurb: "The small units that price and time everything on Kaspa.",
+    id: '1-7', title: 'Sompi, the smallest coin', min: 4,
+    blurb: 'How Kaspa counts the coins inside an envelope: in whole numbers of the smallest one.',
     steps: [
-      {"t":"say","m":"hi","x":"Three small ideas finish the envelope picture: the unit of the coins, the cost of a transaction, and the clock."},
-      {"t":"reveal","id":"sompi","term":"Sompi","plain":"The smallest coin. 1 KAS is 100,000,000 sompi.","x":"Amounts inside envelopes are counted in sompi, as whole numbers."},
-      {"t":"explore","x":"Tap each field a live envelope (UTXO) stores.","items":[{"icon":"coin","h":"Amount","x":"The coins inside, in sompi."},{"icon":"lock","h":"Lock","x":"The `script_public_key`: the rule for opening this envelope."},{"icon":"bolt","h":"Birth record","x":"The DAA score of the block that created it, and whether it came from a coinbase (mining reward)."},{"icon":"tree","h":"Covenant ID","x":"Optional. The family badge, if this envelope belongs to a covenant family."}],"pro":{"h":"The outpoint","x":"Each live envelope is found by its outpoint: the 32-byte id of the transaction that created it plus an output index."}},
-      {"t":"mc","b":1,"q":"How many sompi are in 1 KAS?","opts":["100,000,000","1,000,000","1,000","21,000,000"],"a":0,"why":"1 KAS = 10^8 sompi, so 100,000,000."},
-      {"t":"say","m":"think","x":"Block space is limited, so every transaction has a **mass**. It is the **largest** of three costs:\n\n**transient** (how many bytes it sends), **compute** (how much script work it asks for), **storage** (how much it grows the set of envelopes)."},
-      {"t":"mc","b":1,"q":"How is a transaction’s mass worked out from its three costs?","opts":["It is the largest of them","It is the sum of them","It is the average of them","It is the byte size only"],"a":0,"why":"Mass is the maximum of transient, compute and storage mass. Whichever cost dominates sets the mass."},
-      {"t":"tf","b":1,"q":"Creating many tiny outputs can raise a transaction’s storage mass.","a":true,"why":"Storage mass penalizes transactions that bloat the envelope set with many low-value outputs."},
-      {"t":"say","m":"calm","x":"A BlockDAG has no single straight chain, so there is no simple “block height”. Contracts use the **DAA score**: a counter that rises as blocks arrive. Time locks like `tx.daa` and `this.ageDaa` are measured in it.\n\nBlock timestamps are not strictly increasing, so contracts do not lean on them."},
-      {"t":"mc","b":1,"q":"Which counter does a covenant use as its height-like clock?","opts":["The DAA score","The block timestamp","An account nonce","The block’s byte size"],"a":0,"why":"The DAA score rises as blocks are added. Header timestamps can move backwards slightly, so they are a poor clock for contracts."}
+      { t: 'say', m: 'hi', x: 'Every envelope holds an amount. Inside an envelope Kaspa never writes decimals. It counts in whole numbers of the **smallest coin**.\n\nLet’s see how small that is.' },
+      { t: 'explore', x: 'Tap each amount to see it counted in the smallest coin.', items: [
+        { icon: 'coin', h: '1 KAS', x: 'That is 100,000,000 smallest coins.' },
+        { icon: 'coin', h: 'Half a KAS', x: 'That is 50,000,000 smallest coins.' },
+        { icon: 'coin', h: 'One hundredth of a KAS', x: 'That is 1,000,000 smallest coins.' },
+        { icon: 'coin', h: 'The smallest amount there is', x: 'That is 1 smallest coin. You cannot split it, so there is no half of one.' }
+      ] },
+      { t: 'reveal', term: 'Sompi', plain: 'The smallest coin. 1 KAS is made of 100,000,000 of them.',
+        x: 'The smallest coin is called a sompi. Amounts inside envelopes are counted in sompi, as whole numbers.' },
+      { t: 'mc', b: 1, q: 'How many sompi are in 1 KAS?', opts: ['100,000,000', '1,000,000', '1,000', '21,000,000'], a: 0,
+        why: '1 KAS = 10^8 sompi, so 100,000,000.' },
+      { t: 'explore', x: 'Tap each thing a live envelope stores.', items: [
+        { icon: 'coin', h: 'Amount', x: 'The coins inside, counted in sompi.' },
+        { icon: 'lock', h: 'Lock', x: 'The rule for opening this envelope: the lock you met in the first lessons.' },
+        { icon: 'tree', h: 'Family badge', x: 'Optional. The covenant ID, if this envelope belongs to a covenant family.' }
+      ], pro: { h: 'The rest of the record', x: 'A live envelope also stores its birth record: the DAA score of the block that created it, and whether it came from a coinbase (a mining reward). Each one is found by its outpoint: the 32-byte id of the transaction that created it plus an output index.' } },
+      { t: 'tf', q: 'The amount inside an envelope is a whole number of sompi.', a: true,
+        why: 'Amounts are whole numbers. There is no such thing as half a sompi.' },
+      { t: 'match', b: 1, q: 'Match each amount to its size in sompi.', pairs: [
+        ['1 KAS', '100,000,000 sompi'], ['Half a KAS', '50,000,000 sompi'], ['The smallest coin', '1 sompi']
+      ], why: '1 KAS is 100,000,000 sompi, so half a KAS is 50,000,000 and the smallest coin is 1.' },
+      { t: 'say', m: 'yay', x: 'That finishes the envelope picture: coins, locks, rules, memory, addresses and amounts.\n\nTwo more small ideas wait in later worlds: what a transaction **costs**, and how contracts **count time**. You will meet them when you need them.',
+        pro: { h: 'Mass and the DAA clock', x: 'Block space is limited, so every transaction has a **mass**. It is the **largest** of three costs: **transient** (how many bytes it sends), **compute** (how much script work it asks for) and **storage** (how much it grows the set of envelopes). Creating many tiny outputs can raise the storage mass.\n\nA BlockDAG has no single straight chain, so there is no simple block height. Contracts use the **DAA score** instead: a counter that rises as blocks arrive. Time locks like `tx.daa` and `this.ageDaa` are measured in it. Block timestamps are not strictly increasing, so contracts do not lean on them.' } }
     ]
   });
 })();

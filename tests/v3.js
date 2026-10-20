@@ -22,7 +22,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.log('FAIL: ' + m
   let { ctx, page, errs } = await open();
   await page.waitForSelector('.welcome');
   ok(errs.length === 0, 'no errors or CSP violations on load: ' + errs.join(' | '));
-  ok(await page.evaluate(() => !document.querySelector('.boot') && SK.version === '3.0.0'), 'boot screen replaced, version 3.0.0');
+  ok(await page.evaluate(v => !document.querySelector('.boot') && SK.version === v, require('../package.json').version), 'boot screen replaced, version matches package.json');
   await quiet(page);
   await page.evaluate(() => document.querySelector('.welcome .btn.alt').click());
 
@@ -61,7 +61,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.log('FAIL: ' + m
   ok(r.bad.every(x => x === false), 'bad progress codes are rejected: ' + r.bad);
   ok(r.same, 'a rejected code leaves current progress untouched');
   const j = await page.evaluate(() => {
-    const raw = '{"v":2,"xp":120,"streak":-4,"done":{"1-1":{"stars":9},"x":{"stars":1},"2-1":"no"},"mistakes":["1-1:2","bad","1-1:2"],"badges":{"first":5,"../x":1},"set":{"theme":"neon","sound":"yes","motion":false},"level":"wizard","__proto__":{"polluted":1},"resume":{"1-2":3,"9-9":-1},"rs":{"1-2":{"m":1,"t":2,"o":3}}}';
+    const raw = '{"v":2,"xp":120,"streak":-4,"done":{"1-1":{"stars":9},"x":{"stars":1},"2-1":"no"},"mistakes":["1-1:2","bad","1-1:2"],"badges":{"first":5,"../x":1},"set":{"theme":"neon","sound":"yes","motion":false},"level":"wizard","__proto__":{"polluted":1},"resume":{"2-3":3,"9-9":-1},"rs":{"2-3":{"m":1,"t":2,"o":3}}}';
     const okImport = SK.importCode(btoa(raw)), s = SK.state;
     return { okImport, xp: s.xp, streak: s.streak, done: Object.keys(s.done).join(), stars: s.done['1-1'] && s.done['1-1'].stars, mistakes: s.mistakes.join(), badges: Object.keys(s.badges).join(), theme: s.set.theme, sound: s.set.sound, motion: s.set.motion, level: s.level, resume: JSON.stringify(s.resume), rs: JSON.stringify(s.rs), polluted: ({}).polluted, own: Object.prototype.hasOwnProperty.call(s, 'polluted') };
   });
@@ -69,7 +69,7 @@ const ok = (c, m) => { if (c) passes++; else { fails++; console.log('FAIL: ' + m
   ok(j.done === '1-1' && j.stars === 3, 'only valid lessons survive, stars clamp to 3: ' + j.done + '/' + j.stars);
   ok(j.mistakes === '1-1:2' && j.badges === 'first', 'review keys and badges are validated: ' + j.mistakes + ' ' + j.badges);
   ok(j.theme === 'system' && j.sound === true && j.motion === false && j.level === null, 'settings fall back to safe values');
-  ok(j.resume === '{"1-2":3}' && j.rs === '{"1-2":{"m":1,"t":2,"o":3}}', 'resume data is validated: ' + j.resume + ' ' + j.rs);
+  ok(j.resume === '{"2-3":3}' && j.rs === '{"2-3":{"m":1,"t":2,"o":3}}', 'resume data is validated: ' + j.resume + ' ' + j.rs);
   ok(j.polluted === undefined && !j.own, 'no prototype pollution');
   ok(await page.evaluate(() => { const a = JSON.stringify(SK.state); return SK.importCode(SK.exportCode()) && JSON.stringify(SK.state) === a; }), 'export then import round-trips');
   ok(await page.evaluate(() => { try { return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(SK.exportCode()), c => c.charCodeAt(0)))).v === 2; } catch (e) { return false; } }), 'progress code is base64 of UTF-8 JSON');

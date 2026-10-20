@@ -1,0 +1,22 @@
+name: Content error
+description: A lesson, question or contract says something that is wrong or unclear
+labels: ["documentation"]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: The lesson id, question or contract (for example "Lesson 3-2, question 4").
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What is wrong or unclear
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Source that shows the right answer
+      description: A link to the official repository, spec or KIP.

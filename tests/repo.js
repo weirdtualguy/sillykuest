@@ -55,7 +55,8 @@ all.forEach(f => ok(!/(\.bak|\.orig|\.rej|\.zip|\.DS_Store|^apply_.*\.js)$/.test
 ok(!all.some(f => /^(SILLY-HANDOFF|IMPLEMENTATION_STATE\d*|CHANGES)\.md$/.test(f)), 'internal handoff or old changes files are still in the repo');
 
 /* 5. repo files a public project needs */
-['README.md', 'LICENSE', 'THIRD_PARTY.md', 'CHANGELOG.md', 'CONTRIBUTING.md', '.gitignore', '.editorconfig', '.nojekyll', '.github/workflows/ci.yml', '.github/workflows/pages.yml', 'docs/AUTHORING.md'].forEach(f => ok(exists(f), 'missing ' + f));
+['README.md', 'LICENSE', 'THIRD_PARTY.md', 'CHANGELOG.md', 'CONTRIBUTING.md', '.gitignore', '.editorconfig', '.nojekyll', '.github/workflows/ci.yml', '.github/workflows/pages.yml', '.github/dependabot.yml', '.github/PULL_REQUEST_TEMPLATE.md', '.github/ISSUE_TEMPLATE/bug.yml', '.github/ISSUE_TEMPLATE/content-error.yml', 'SECURITY.md', 'docs/AUTHORING.md'].forEach(f => ok(exists(f), 'missing ' + f));
+ok(/needs:\s*check/.test(read('.github/workflows/pages.yml')), 'pages.yml deploys without waiting for the checks job');
 const donate = (core.match(/SK\.DONATE = '([^']*)'/) || [])[1];
 ok(!!donate, 'SK.DONATE is empty');
 ok(donate && read('README.md').indexOf(donate) >= 0, 'README.md does not show the donation name ' + donate);

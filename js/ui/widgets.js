@@ -16,7 +16,20 @@
     set(value);
     return { el: el, set: set };
   }
-  function res() { var r = h('div', { class: 'res', 'aria-live': 'polite' }); r.show = function (ok, html) { r.className = 'res ' + (ok ? 'ok' : 'no'); r.innerHTML = '<strong>' + (ok ? 'Allowed. ' : 'Blocked. ') + '</strong>' + html; }; r.note = function (html) { r.className = 'res'; r.innerHTML = html; }; return r; }
+  /* A result that lands below the fold on a short phone is easy to miss, and then the toy looks dead. Bring it into view.
+     Does nothing when it is already visible, or when the toy is not inside the lesson player (the Lab page scrolls itself). */
+  function inView(el) {
+    SK.wait(40, function () {
+      var box = el.closest && el.closest('.p-main');
+      if (!box || !el.isConnected) return;
+      var r = el.getBoundingClientRect(), b = box.getBoundingClientRect();
+      if (r.bottom > b.bottom - 6 && r.height < b.height) {
+        var by = r.bottom - b.bottom + 14;
+        if (box.scrollBy) box.scrollBy({ top: by, behavior: SK.reduced() ? 'auto' : 'smooth' }); else box.scrollTop += by;
+      }
+    });
+  }
+  function res() { var r = h('div', { class: 'res', 'aria-live': 'polite' }); r.show = function (ok, html) { r.className = 'res ' + (ok ? 'ok' : 'no'); r.innerHTML = '<strong>' + (ok ? 'Allowed. ' : 'Blocked. ') + '</strong>' + html; inView(r); }; r.note = function (html) { r.className = 'res'; r.innerHTML = html; }; return r; }
   function wrap(cls) { var el = h('div', { class: 'wg ' + (cls || '') }); for (var i = 1; i < arguments.length; i++) if (arguments[i]) el.appendChild(arguments[i]); return el; }
 
   /* 1. Open an envelope and pay Sam */
@@ -78,9 +91,46 @@
     return { el: wrap('', h('div', { class: 'lanes2' }, a.el, u.el), go, h('p', { class: 'cap' }, 'A simplified picture. In the account model the shared state is the bottleneck; with UTXOs, independent envelopes can be handled side by side.')), solve: run };
   };
 
-  /* 3. The gate: plain key lock versus covenant lock */
+  /* 3a. A key lock on its own: shut without the key, open with it, and it never asks where the coins go.
+     Used by lesson 1.2, before the covenant is introduced, so it says nothing about covenants. */
+  W.keylock = function (step, ctx) {
+    var phase = 0, who = null, WHO = ['Alice', 'Bob', 'Mallory'];
+    var scene = h('div', { class: 'scene' }), out = res();
+    function env(state, sub) { return SK.env({ amt: '10 KAS', sub: sub, state: state, accent: '#9A8CFF' }); }
+    function focusFirst() { var b = scene.querySelector('button'); if (b) { try { b.focus({ preventScroll: true }); } catch (e) { b.focus(); } } }
+    function draw() {
+      SK.clear(scene);
+      if (phase < 2) {
+        scene.appendChild(h('div', { class: 'env-row' }, env('locked', 'locked')));
+        scene.appendChild(h('p', { class: 'cap' }, phase === 0 ? 'A locked envelope with 10 KAS inside. You are not holding a key yet.' : 'Now take out your key.'));
+        scene.appendChild(phase === 0 ? btn('Try to open it without the key', tryShut, 'block') : btn('Open it with my key', unlock, 'block'));
+      } else if (phase === 2) {
+        scene.appendChild(h('div', { class: 'env-row' }, env('open', 'open')));
+        scene.appendChild(h('p', { class: 'lbl' }, 'Where should the 10 KAS go? The lock will not mind.'));
+        var row = h('div', { class: 'tries' });
+        WHO.forEach(function (n) { row.appendChild(btn('All 10 to ' + n, function () { send(n); }, 'alt')); });
+        scene.appendChild(row);
+      } else {
+        scene.appendChild(h('div', { class: 'env-row' }, env('used', 'used up'), SK.env({ amt: '10 KAS', sub: 'for ' + who, state: 'sealed', stamp: 'keylock|' + who, accent: '#FFC233' })));
+      }
+    }
+    function tryShut() { if (phase !== 0) return; phase = 1; SK.sfx('bad'); SK.buzz(40); out.show(false, 'You have no key, so the lock stays shut.'); draw(); focusFirst(); }
+    function unlock() { if (phase !== 1) return; phase = 2; SK.sfx('stamp'); SK.buzz(20); out.show(true, 'Your key fits, so the lock lets go and the envelope opens.'); draw(); focusFirst(); }
+    function send(n) {
+      if (phase !== 2) return;
+      who = n; phase = 3; SK.sfx('ok');
+      out.show(true, n + ' gets all 10 KAS. The lock never asked where the coins would go. It only checked the key.');
+      draw(); ctx.setReady(true);
+    }
+    ctx.hint('Try it without the key, then with it');
+    out.note('Tap the button to see what the lock does.');
+    draw();
+    return { el: wrap('', scene, out), solve: function () { tryShut(); unlock(); send('Alice'); } };
+  };
+
+  /* 3. The gate: plain key lock versus covenant lock. step.plain keeps the covenant word off the screen (lesson 1.3 reveals it afterwards). */
   W.gate = function (step, ctx) {
-    var lock = 'plain', blockedSeen = false;
+    var lock = 'plain', blockedSeen = false, pl = !!step.plain;
     var out = res();
     var tries = [
       { t: 'Alice gets 6, I keep 4', alice: 6, d: 'Alice 6 KAS, you 4 KAS' },
@@ -88,7 +138,7 @@
       { t: 'Alice gets 2, Mallory gets 8', alice: 2, d: 'Alice 2 KAS, Mallory 8 KAS' }
     ];
     var rule = h('div', { class: 'rule card' });
-    var sg = seg([{ v: 'plain', t: 'Plain key lock' }, { v: 'cov', t: 'Covenant lock' }], 'plain', function (v) { lock = v; paint(); out.note('Pick a spend to try.'); });
+    var sg = seg([{ v: 'plain', t: pl ? 'Key lock' : 'Plain key lock' }, { v: 'cov', t: pl ? 'Key lock + rule' : 'Covenant lock' }], 'plain', function (v) { lock = v; paint(); out.note('Pick a spend to try.'); });
     function paint() {
       rule.innerHTML = lock === 'plain'
         ? '<strong>This lock asks one question:</strong> is the owner signing? If yes, the coins can go anywhere.'
@@ -100,11 +150,11 @@
         SK.sfx('tap');
         if (lock === 'plain') out.show(true, 'You signed, so the key lock is happy: ' + t.d + '. It never looked at where the money went.');
         else if (t.alice >= 5) out.show(true, 'You signed and Alice gets ' + t.alice + ' KAS, which is at least 5.');
-        else { blockedSeen = true; out.show(false, 'The covenant looked at the new envelopes: Alice gets ' + t.alice + ' KAS, but the rule says at least 5. Your signature was not enough.'); SK.buzz(40); ctx.setReady(true); }
+        else { blockedSeen = true; out.show(false, 'The ' + (pl ? 'rule' : 'covenant') + ' looked at the new envelopes: Alice gets ' + t.alice + ' KAS, but the rule says at least 5. Your signature was not enough.'); SK.buzz(40); ctx.setReady(true); }
       }, 'alt'));
     });
     paint(); out.note('Pick a spend to try.');
-    ctx.hint('Try a sneaky spend on the covenant lock');
+    ctx.hint(pl ? 'Try a sneaky spend on the lock with a rule' : 'Try a sneaky spend on the covenant lock');
     return { el: wrap('', h('p', { class: 'cap' }, 'You own a 10 KAS envelope. Alice is owed at least 5 KAS from it. Try each spend under each lock.'), sg.el, rule, row, out), solve: function () { sg.set('cov'); lock = 'cov'; paint(); row.children[1].click(); } };
   };
 

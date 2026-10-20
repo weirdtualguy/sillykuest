@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   var SK = (window.SK = window.SK || {});
-  SK.version = '3.0.0';
+  SK.version = '3.1.0';
   /* The Kaspa name people can send KAS to. Shown in the Support sheet (You tab, Learn footer). */
   SK.DONATE = 'weirdtualguy.k';
 
@@ -75,17 +75,47 @@
   var KEY = 'sillykuest.v2';
   /* Saved Review keys look like "3-4:2" (lesson:stepIndex). When a teaching step is inserted into a lesson, the keys of the
      later steps move with it. Each entry here runs once per saved state (state.mig counts how many have run).
-     Add new entries at the END only, and bump nothing else. */
-  SK.KEYSHIFTS = [{ lesson: '3-4', at: 1, by: 1 }];
+     Add new entries at the END only, and bump nothing else. Two kinds of entry:
+       { lesson, at, by }   a step was inserted at index `at` of `lesson`: later Review keys move by `by`.
+       { remap: {...} }     lessons were renumbered, split or reshaped. `remap` is described at W1_31 below. */
+  /* 3.1.0 reshaped World 1 (one new idea per lesson): old 1-2 split into 1-2 and 1-3, every later lesson moved up one, and
+     the old mass and DAA questions left the lesson path. Everything saved under an old id moves with its lesson.
+       done    old lesson id -> the new ids it now covers (a split lesson counts for both halves, with the same stars)
+       moved   lessons whose steps kept their order: old id -> [new id, step offset] (resume place and Review keys follow)
+       keys    Review keys of reshaped lessons: old key -> new key. A key that is not listed lost its question and is dropped.
+     A saved place inside a reshaped lesson is dropped too, so that lesson starts again from its first step. */
+  var W1_31 = {
+    done: { '1-2': ['1-2', '1-3'], '1-3': ['1-4'], '1-4': ['1-5'], '1-5': ['1-6'], '1-6': ['1-7'] },
+    moved: { '1-3': ['1-4', 3], '1-4': ['1-5', 0] },
+    keys: { '1-2:5': '1-3:7', '1-2:6': '1-3:6', '1-2:7': '1-4:2', '1-5:6': '1-6:5', '1-5:8': '1-6:7', '1-5:9': '1-6:8', '1-5:13': '1-6:9', '1-6:3': '1-7:3' }
+  };
+  SK.KEYSHIFTS = [{ lesson: '3-4', at: 1, by: 1 }, { remap: W1_31 }];
+  function remap(st, m) {
+    var k, d = {}, rz = {}, rr = {}, seen = {}, keys = [];
+    function keep(t, v) { if (!d[t] || d[t].stars < v.stars) d[t] = { stars: v.stars }; }
+    for (k in st.done) (m.done[k] || [k]).forEach(function (t) { keep(t, st.done[k]); });
+    for (k in st.resume) {
+      if (m.moved[k]) { rz[m.moved[k][0]] = st.resume[k] + m.moved[k][1]; if (st.rs[k]) rr[m.moved[k][0]] = st.rs[k]; }
+      else if (!m.done[k]) { rz[k] = st.resume[k]; if (st.rs[k]) rr[k] = st.rs[k]; }
+    }
+    (st.mistakes || []).forEach(function (key) {
+      var p = String(key).split(':'), nk = key;
+      if (m.keys[key]) nk = m.keys[key];
+      else if (m.moved[p[0]]) nk = m.moved[p[0]][0] + ':' + (+p[1] + m.moved[p[0]][1]);
+      else if (m.done[p[0]]) nk = null;
+      if (nk && !seen[nk]) { seen[nk] = 1; keys.push(nk); }
+    });
+    st.done = d; st.resume = rz; st.rs = rr; st.mistakes = keys;
+  }
   function migrate(st) {
     var n = +st.mig || 0;
     for (; n < SK.KEYSHIFTS.length; n++) {
-      (function (s) {
-        st.mistakes = (st.mistakes || []).map(function (k) {
-          var p = String(k).split(':');
-          return p[0] === s.lesson && +p[1] >= s.at ? p[0] + ':' + (+p[1] + s.by) : k;
-        });
-      })(SK.KEYSHIFTS[n]);
+      var s = SK.KEYSHIFTS[n];
+      if (s.remap) { remap(st, s.remap); continue; }
+      st.mistakes = (st.mistakes || []).map(function (k) {
+        var p = String(k).split(':');
+        return p[0] === s.lesson && +p[1] >= s.at ? p[0] + ':' + (+p[1] + s.by) : k;
+      });
     }
     st.mig = n;
     return st;

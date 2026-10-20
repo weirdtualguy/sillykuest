@@ -2,6 +2,28 @@
 
 Versions follow `SK.version` in `js/core.js`. The service worker cache name and `package.json` must match it (`node tests/repo.js` checks).
 
+## 3.1.0 - 2026-10-20
+
+Gentler onboarding. World 1 now teaches one new idea per lesson, and a real term appears only after the player has done something with it.
+
+### Changed
+- **World 1 has seven lessons** (was six). Lesson 1.2 is split: *Envelopes with locks* teaches only the plain key lock (try it with and without the key), and *A lock that checks the spend* (1.3) introduces the covenant. Every later lesson moved up one number.
+- **Terms are earned.** The envelope wording stays until the reveal stamp: "the lock on the new envelope" instead of "successor's lock", "looking at the spend" instead of "introspection". Each term in World 1 (Signature, Covenant, Introspection, P2SH and its redeem script, Covenant ID, Address, Sompi) now comes as plain words first, and `npm test` fails if a lesson uses one early. The lock toy in 1.3 says "Key lock + rule" until the covenant is named.
+- **Easier first questions.** After a new idea in 1.2, 1.3, 1.6 and 1.7 the first question is a recognition pick. The five-card "who can check this" sort moved from the lesson that introduces covenants to the start of 1.4, as a look back with two Sil steps before it.
+- **1.6 Reading an address** went from 15 steps to 11. The version byte table and the lock bytes table are now Pro corners, and the testnet paste and wrap-in-P2SH questions left the lesson.
+- **1.7 Sompi, the smallest coin** is sompi alone. Mass and the DAA clock moved to a Pro corner at its end, and the mass and DAA questions are gone. Lesson 3-5 gets its own Pro corner on the three kinds of mass; 2-4 already teaches the DAA score.
+- Reveals in the new lessons show the plain words and the stamp. The precise wording moved to a Pro corner where it helps (Introspection) or stays in the dictionary.
+- Net size: 34 lessons and 163 questions (was 33 and 161). The mass, DAA clock, testnet paste and wrap-in-P2SH questions left the lesson path.
+
+### Added
+- **Key lock toy** (`keylock`) for lesson 1.2: try the envelope without the key, then with it, then send the coins anywhere. The lock never asks where they go. The `gate` toy gained `plain: true`.
+- **Progress migration.** 3.0.0 saves and progress codes are migrated once: finished lessons move to their new ids (the split lesson counts for both halves, with the same stars), a saved place follows lessons whose steps kept their order, and Review keys follow their questions. Review keys for questions that no longer exist are dropped, and a saved place inside a reshaped lesson starts again.
+- `tests/validate.js` fails if a World 1 lesson uses a term before its reveal. `tests/gentle.js` checks the new lessons, toys, Pro corners and the migration (every migrated Review key must still show the same question).
+
+### Fixed
+- A toy result that landed below the fold was invisible on 360 x 640 and 320 x 568 phones, so the lock toy looked dead. Results now scroll into view.
+- A Pro corner on a Sil step sat beside the speech bubble on wide screens. It now sits under it.
+
 ## 3.0.0 - 2026-10-19
 
 First public release.

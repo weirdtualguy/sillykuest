@@ -110,6 +110,26 @@ SK.lessons.forEach(l => {
   if (firstQuiz < 2) W(l.id, 'quiz starts very early');
   if (lastTeach > l.steps.length - 1) W(l.id, 'ends on teaching'); // informational
 });
+/* World 1 is "no code yet": a term that a reveal step names (UTXO, Signature, Covenant, ...) may not appear in lesson text
+   before that reveal. The plain words come first and the stamp names the idea. Pro corners are opt-in, so they are exempt;
+   so are lesson titles and blurbs, which name the topic on the map. */
+(function earnedTerms() {
+  const reveals = [];
+  SK.lessonsOf(1).forEach((l, li) => l.steps.forEach((s, si) => { if (s.t === 'reveal' && (s.term || s.id)) reveals.push({ term: s.term || SK.gloss[s.id].term, at: li * 1000 + si }); }));
+  const noPro = step => { const c = Object.assign({}, step); delete c.pro; return c; };
+  SK.lessonsOf(1).forEach((l, li) => l.steps.forEach((s, si) => {
+    const here = li * 1000 + si, id = l.id + '#' + si + '(' + s.t + ')';
+    /* the plain words of a reveal come before its stamp, so they must not use the term; its explanation comes after */
+    const text = s.t === 'reveal' ? [s.plain || ''] : texts(noPro(s));
+    reveals.forEach(r => {
+      if (r.at < here || (r.at === here && s.t !== 'reveal')) return;
+      const re = new RegExp('\\b' + r.term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?:s|\'s|\u2019s)?\\b', 'i');
+      if (text.some(t => re.test(t.replace(/\[\[[a-z0-9-]+\|([^\]]+)\]\]/g, '$1')))) E(id, 'uses "' + r.term + '" before its reveal (lesson ' + SK.lessonsOf(1)[Math.floor(r.at / 1000)].id + ' step ' + (r.at % 1000) + '). Use plain words until the stamp.');
+    });
+  }));
+})();
+/* a "lesson 1-6" mentioned in text must be a lesson that exists (lessons were renumbered once; a stale pointer is easy to miss) */
+SK.lessons.forEach(l => l.steps.forEach((s, si) => texts(s).forEach(t => { (t.match(/\blessons? (\d-\d)\b/gi) || []).forEach(m => { const id = m.split(' ')[1]; if (!SK.lesson(id)) E(l.id + '#' + si, 'points at lesson ' + id + ', which does not exist'); }); })));
 SK.worlds.forEach(w => {
   const n = SK.lessonsOf(w.id).length, keys = SK.bossKeys(w.id).length;
   if (!n) E('world' + w.id, 'no lessons');

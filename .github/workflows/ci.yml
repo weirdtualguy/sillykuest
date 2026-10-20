@@ -33,6 +33,7 @@ jobs:
       - run: npm install --no-audit --no-fund
       - run: npx playwright install --with-deps chromium
       - run: node tests/v3.js
+      - run: node tests/gentle.js
       - run: node tests/qtypes.js
       - run: node tests/heist.js
       - run: node tests/ux.js

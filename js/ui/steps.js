@@ -155,7 +155,8 @@
     if (step.pro && !SK.QUIZ[step.t]) {
       var d = h('details', { class: 'pro' }, h('summary', null, 'Pro corner: ' + step.pro.h),
         h('div', { class: 'pro-body', html: SK.paras(step.pro.x) }));
-      inst.el.appendChild(d);
+      /* a say step is a flex row on wide screens: keep the corner under the speech bubble, not beside it */
+      if (step.t === 'say') inst.el = h('div', null, inst.el, d); else inst.el.appendChild(d);
     }
     return inst;
   };
