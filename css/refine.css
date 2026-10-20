@@ -79,6 +79,11 @@ h1, h2, .wm, .sh-t, .prof-b h1, .ds-v span { font-family: var(--disp); font-weig
 .support h3 { font-size: 1.02rem; margin-bottom: 2px; }
 .support p { margin: 0; font-size: .82rem; line-height: 1.4; color: var(--ink-soft); }
 .support .btn { flex: none; }
+.install { align-items: flex-start; }
+.install > span:first-child { flex: none; margin-top: 2px; }
+.in-b { flex: 1; min-width: 0; }
+.in-b p { margin: 0; }
+.in-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 @media (max-width: 380px) { .support { flex-wrap: wrap; } .support .sup-b { flex-basis: calc(100% - 66px); } .support .btn { width: 100%; } }
 
 .foot-note { margin-bottom: 8px; }

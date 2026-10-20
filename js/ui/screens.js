@@ -43,6 +43,28 @@
     });
   };
 
+  /* ========================================================== INSTALL */
+  /* What to suggest depends on where the app runs. Chrome hands over a prompt (SK.installEv). iPhone Safari has none, so
+     we say where the button is. Android Chrome withholds the prompt when the app is already installed, so we say where to
+     find it. Installed and running standalone: nothing to suggest. */
+  SK.installText = {
+    prompt: 'Install SillyKuest to open it like an app, even offline.',
+    ios: 'Add SillyKuest to your Home Screen: tap Share, then Add to Home Screen.',
+    android: 'Already installed? Open SillyKuest from your home screen. If not, open the three-dot menu and tap Install app.'
+  };
+  SK.installMode = function () {
+    var ua = navigator.userAgent || '';
+    try { if ((window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone) return null; } catch (e) { /* no matchMedia */ }
+    if (SK.installEv) return 'prompt';
+    if (/iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 'ios';
+    if (/Android/.test(ua)) return 'android';
+    return null;
+  };
+  SK.doInstall = function () {
+    var ev = SK.installEv; if (!ev) return; SK.installEv = null;
+    try { ev.prompt(); } catch (e) { /* a prompt event can be used once */ }
+  };
+
   /* ============================================================ LEARN */
   /* Map geometry. Every lesson is one fixed-height row, so the dotted trail can be computed instead of measured.
      Horizontal positions are percentages of the column width, vertical ones are pixels. */
@@ -99,6 +121,16 @@
     }
     if (st.level === 'builder' && !SK.worldDone(1) && !st.bosses[1]) {
       root.appendChild(h('div', { class: 'tip card' }, h('span', { html: SK.icon('crown', 22) }), h('p', 'You said you build things. Beat the Envelope Town boss to skip straight to World 2.'), h('a', { class: 'btn alt sm', href: '#/boss/1' }, 'Test out')));
+    }
+
+    var imode = SK.installMode();
+    if (imode && !st.set.installNo && Object.keys(st.done).length) {
+      var inst = h('div', { class: 'tip card install' }, h('span', { html: SK.icon('plus', 22) }),
+        h('div', { class: 'in-b' }, h('p', SK.installText[imode]),
+          h('div', { class: 'in-acts' },
+            imode === 'prompt' ? h('button', { type: 'button', class: 'btn sm', onclick: function () { SK.doInstall(); inst.remove(); } }, 'Install') : null,
+            h('button', { type: 'button', class: 'btn alt sm', onclick: function () { st.set.installNo = true; SK.save(); inst.remove(); } }, imode === 'prompt' ? 'Not now' : 'Got it'))));
+      root.appendChild(inst);
     }
 
     /* worlds */
@@ -400,9 +432,12 @@
       seg.appendChild(h('button', { type: 'button', class: st.set.theme === t[0] ? 'on' : '', onclick: function () { st.set.theme = t[0]; SK.save(); SK.applyTheme(); SK.$$('button', seg).forEach(function (b) { b.classList.toggle('on', b.textContent === t[1]); }); } }, t[1]));
     });
     th.appendChild(seg); set.appendChild(th);
-    if (SK.installEv) {
+    var imode = SK.installMode();
+    if (imode === 'prompt') {
       set.appendChild(h('div', { class: 'row-set' }, h('span', 'Install as an app'),
-        h('button', { type: 'button', class: 'btn sm', onclick: function () { var ev = SK.installEv; SK.installEv = null; ev.prompt(); SK.route(); } }, 'Install')));
+        h('button', { type: 'button', class: 'btn sm', onclick: function () { SK.doInstall(); SK.route(); } }, 'Install')));
+    } else if (imode) {
+      set.appendChild(h('div', { class: 'row-set' }, h('span', 'Install as an app', h('small', SK.installText[imode]))));
     }
     root.appendChild(set);
     if (SK.DONATE) {

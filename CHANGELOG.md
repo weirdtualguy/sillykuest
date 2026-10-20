@@ -2,6 +2,14 @@
 
 Versions follow `SK.version` in `js/core.js`. The service worker cache name and `package.json` must match it (`node tests/repo.js` checks).
 
+## 3.1.2 - 2026-10-20
+
+### Added
+- **An install suggestion.** After the first finished lesson, the Learn screen offers to install the app, once, and "Not now" or "Got it" hides it for good. It adapts: where Chrome offers an install prompt it has an Install button; on iPhone it says to tap Share, then Add to Home Screen; on Android, where Chrome hides the prompt once the app is already installed, it says to open SillyKuest from the home screen or use the three-dot menu. It never shows inside the installed app. The You tab shows the same advice as an Install row. `tests/install.js` covers each case.
+
+### Fixed
+- The install button in the You tab appeared only if Chrome's install event arrived while the You tab was open. The Learn and You screens now both refresh when it arrives, and never while a lesson is playing.
+
 ## 3.1.1 - 2026-10-20
 
 ### Changed

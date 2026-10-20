@@ -164,8 +164,9 @@
   };
 
   /* Install prompt (Android Chrome and Kiwi) */
-  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); SK.installEv = e; if (activeTab === 'you' && shell) SK.route(); });
-  window.addEventListener('appinstalled', function () { SK.installEv = null; });
+  function refreshInstall() { if (shell && !SK.activePlayer && (activeTab === 'you' || activeTab === 'learn')) SK.route(); }
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); SK.installEv = e; refreshInstall(); });
+  window.addEventListener('appinstalled', function () { SK.installEv = null; SK.state.set.installNo = true; SK.save(); refreshInstall(); });
 
   function start() {
     build();

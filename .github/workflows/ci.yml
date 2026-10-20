@@ -37,5 +37,6 @@ jobs:
       - run: node tests/qtypes.js
       - run: node tests/heist.js
       - run: node tests/ux.js
+      - run: node tests/install.js
       - run: node tests/offline.js
       - run: node tests/browser.js
