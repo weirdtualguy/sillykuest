@@ -72,6 +72,11 @@ ok(donate && read('README.md').indexOf(donate) >= 0, 'README.md does not show th
   vals.forEach(d => { const c0 = c >> 35n; c = ((c & 0x07ffffffffn) << 5n) ^ BigInt(d); G.forEach((g, i) => { if ((c0 >> BigInt(i)) & 1n) c ^= g; }); });
   ok((c ^ 1n) === 0n, 'SK.DONATE fails the Kaspa address checksum (mistyped or cut short?)');
 })();
+/* installed Android app: the area under the tab bar shows the manifest background_color, so it must match the dark theme */
+{
+  const manifest = JSON.parse(read('manifest.webmanifest')), dark = /dark \? '(#[0-9A-Fa-f]{6})'/.exec(read('js/theme.js'));
+  ok(!!dark && String(manifest.background_color).toLowerCase() === dark[1].toLowerCase(), 'manifest background_color should equal the dark theme colour in js/theme.js (it shows under the tab bar in the installed app)');
+}
 const fonts = read('css/fonts.css'), tp = read('THIRD_PARTY.md');
 [...fonts.matchAll(/font-family:"([^"]+)"/g)].map(m => m[1]).filter((v, i, a) => a.indexOf(v) === i).forEach(n => ok(tp.indexOf(n) >= 0, 'THIRD_PARTY.md does not credit the embedded font ' + n));
 

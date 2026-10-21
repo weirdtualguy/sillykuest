@@ -2,6 +2,11 @@
 
 Versions follow `SK.version` in `js/core.js`. The service worker cache name and `package.json` must match it (`node tests/repo.js` checks).
 
+## 3.1.3 - 2026-10-21
+
+### Fixed
+- **A light strip under the tab bar in the installed app (Android).** On phones where Chrome does not let the page draw under the system navigation bar, Android shows the manifest's `background_color` there. It was the light lavender, which looked like a gap under the dark theme. It is now the dark theme's background (`#1A1741`), so the dark theme is seamless and the light theme gets a dark navigation strip. Chrome updates the installed app by itself within about a day; uninstalling and reinstalling shows it at once. Phones that let the page draw edge to edge were already fine, and the tab bar already pads for the system inset.
+
 ## 3.1.2 - 2026-10-20
 
 ### Added
