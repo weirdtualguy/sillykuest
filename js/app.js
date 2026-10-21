@@ -164,6 +164,9 @@
   };
 
   /* Install prompt (Android Chrome and Kiwi) */
+  document.addEventListener('click', function () {
+    if (SK.state.set.fullscreen && SK.canFullscreen && SK.canFullscreen() && !document.fullscreenElement) SK.applyFullscreen(true);
+  }, { capture: true, once: true });
   function refreshInstall() { if (shell && !SK.activePlayer && (activeTab === 'you' || activeTab === 'learn')) SK.route(); }
   window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); SK.installEv = e; refreshInstall(); });
   window.addEventListener('appinstalled', function () { SK.installEv = null; SK.state.set.installNo = true; SK.save(); refreshInstall(); });

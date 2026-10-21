@@ -2,6 +2,15 @@
 
 Versions follow `SK.version` in `js/core.js`. The service worker cache name and `package.json` must match it (`node tests/repo.js` checks).
 
+## 3.2.0 - 2026-10-21
+
+### Added
+- **Full screen.** The installed app now opens in fullscreen display mode, so the tab bar reaches the bottom edge of the screen and the system bars are hidden (swipe from an edge to show them for a moment). Older installs pick this up when Chrome refreshes the app, or after a reinstall. In a normal browser tab a page cannot draw under the system bars, so the You tab has a new **Full screen** setting that uses the browser's fullscreen mode instead; a saved choice is applied on your first tap, because browsers only allow it after a tap. The setting is hidden where it cannot work (iPhone) or is not needed (installed app).
+
+### Fixed
+- The install suggestion no longer treats a browser tab that is in fullscreen as the installed app, and recognises the installed app in fullscreen and minimal-ui display modes as well as standalone.
+- The "Install as an app" row in the You tab ran its hint into the title on one line; the hint now sits on its own line like the other settings.
+
 ## 3.1.3 - 2026-10-21
 
 ### Fixed

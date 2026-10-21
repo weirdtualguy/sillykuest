@@ -52,13 +52,33 @@
     ios: 'Add SillyKuest to your Home Screen: tap Share, then Add to Home Screen.',
     android: 'Already installed? Open SillyKuest from your home screen. If not, open the three-dot menu and tap Install app.'
   };
+  function media(q) { try { return !!(window.matchMedia && window.matchMedia(q).matches); } catch (e) { return false; } }
+  /* Running as the installed app. display-mode "fullscreen" also matches while a browser tab is in fullscreen through the
+     Fullscreen API, which is not an install, so that case is told apart by document.fullscreenElement. */
+  SK.isInstalled = function () {
+    return media('(display-mode: standalone)') || media('(display-mode: minimal-ui)') || navigator.standalone === true ||
+      (media('(display-mode: fullscreen)') && !document.fullscreenElement);
+  };
   SK.installMode = function () {
     var ua = navigator.userAgent || '';
-    try { if ((window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || navigator.standalone) return null; } catch (e) { /* no matchMedia */ }
+    if (SK.isInstalled()) return null;
     if (SK.installEv) return 'prompt';
     if (/iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) return 'ios';
     if (/Android/.test(ua)) return 'android';
     return null;
+  };
+  /* Full screen: a normal browser tab keeps the system bars, and a web page cannot draw under them. The Fullscreen API
+     hides them, so the setting asks for it. Browsers only allow it after a tap, so a saved choice is applied on the first tap. */
+  SK.canFullscreen = function () {
+    return !!document.fullscreenEnabled && !(media('(display-mode: fullscreen)') && !document.fullscreenElement);
+  };
+  SK.applyFullscreen = function (on) {
+    var d = document;
+    try {
+      var p = on ? (!d.fullscreenElement && d.documentElement.requestFullscreen ? d.documentElement.requestFullscreen({ navigationUI: 'hide' }) : null)
+                 : (d.fullscreenElement && d.exitFullscreen ? d.exitFullscreen() : null);
+      if (p && p.catch) p.catch(function () { /* refused: the switch stays, the next tap tries again */ });
+    } catch (e) { /* no Fullscreen API */ }
   };
   SK.doInstall = function () {
     var ev = SK.installEv; if (!ev) return; SK.installEv = null;
@@ -426,6 +446,11 @@
     var oa = sw('Open every lesson', st.set.openAll, function (v) { st.set.openAll = v; SK.save(); });
     oa.querySelector('span').appendChild(h('small', 'Skip the order and jump to any lesson.'));
     set.appendChild(oa);
+    if (SK.canFullscreen()) {
+      var fs = sw('Full screen', st.set.fullscreen, function (v) { st.set.fullscreen = v; SK.save(); SK.applyFullscreen(v); });
+      fs.querySelector('span').appendChild(h('small', 'Hide the browser bars and fill the whole screen. Swipe from the edge to bring them back.'));
+      set.appendChild(fs);
+    }
     var th = h('div', { class: 'row-set' }, h('span', 'Theme'));
     var seg = h('div', { class: 'seg sm' });
     [['system', 'System'], ['light', 'Light'], ['dark', 'Dark']].forEach(function (t) {

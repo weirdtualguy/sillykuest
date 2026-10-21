@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   var SK = (window.SK = window.SK || {});
-  SK.version = '3.1.3';
+  SK.version = '3.2.0';
   /* The Kaspa address people can send KAS to. Shown in the Support sheet (You tab, Learn footer). */
   SK.DONATE = 'kaspa:qp26rvw8t7qxl2kyu70us2tptz3u4p09f6h6l4k4gxlc40uau2m0xvjjw9whl';
 
@@ -149,7 +149,7 @@
     if (isObj(o.rs)) for (k in o.rs) if (d.resume[k] && isObj(o.rs[k])) d.rs[k] = { m: cnt(o.rs[k].m), t: cnt(o.rs[k].t), o: cnt(o.rs[k].o) };
     if (isObj(o.stats)) ['ok', 'total', 'bug', 'build', 'heist'].forEach(function (n) { if (o.stats[n] !== undefined) d.stats[n] = cnt(o.stats[n]); });
     if (isObj(o.set)) {
-      ['sound', 'openAll', 'motion', 'seenEnd', 'installNo'].forEach(function (n) { if (typeof o.set[n] === 'boolean') d.set[n] = o.set[n]; });
+      ['sound', 'openAll', 'motion', 'seenEnd', 'installNo', 'fullscreen'].forEach(function (n) { if (typeof o.set[n] === 'boolean') d.set[n] = o.set[n]; });
       if (['system', 'light', 'dark'].indexOf(o.set.theme) >= 0) d.set.theme = o.set.theme;
     }
     d.level = ['new', 'basics', 'builder'].indexOf(o.level) >= 0 ? o.level : null;
