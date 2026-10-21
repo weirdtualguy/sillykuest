@@ -2,6 +2,10 @@
 
 Versions follow `SK.version` in `js/core.js`. The service worker cache name and `package.json` must match it (`node tests/repo.js` checks).
 
+## 3.2.4 - 2026-10-21
+
+- Fixed: manifest display is now standalone (3.2.3 changed the test but not the manifest).
+
 ## 3.2.3 - 2026-10-21
 
 - Changed: installed app uses standalone display so system bars stay put.
