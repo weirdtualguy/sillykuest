@@ -129,3 +129,7 @@ h1, h2, .wm, .sh-t, .prof-b h1, .ds-v span { font-family: var(--disp); font-weig
 .boot svg { animation: bootfloat 2.4s ease-in-out infinite; }
 @keyframes bootfloat { 50% { transform: translateY(-8px); } }
 @media (prefers-reduced-motion: reduce) { .boot svg { animation: none; } }
+
+/* Fill the area below the viewport-bound tab bar with the tab bar color */
+html { background: var(--paper); }
+body { background-color: var(--bg); min-height: 100dvh; }
