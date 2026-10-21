@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   var SK = (window.SK = window.SK || {});
-  SK.version = '3.2.2';
+  SK.version = '3.2.3';
   /* The Kaspa address people can send KAS to. Shown in the Support sheet (You tab, Learn footer). */
   SK.DONATE = 'kaspa:qp26rvw8t7qxl2kyu70us2tptz3u4p09f6h6l4k4gxlc40uau2m0xvjjw9whl';
 

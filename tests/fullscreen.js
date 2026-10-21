@@ -11,7 +11,7 @@ let fails = 0, passes = 0;
 function ok(c, m) { if (c) passes++; else { fails++; console.log('FAIL: ' + m); } }
 (async () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'manifest.webmanifest'), 'utf8'));
-  ok(manifest.display === 'fullscreen', 'manifest display should be fullscreen so the installed app has no bar under the tab bar');
+  ok(manifest.display === 'standalone', 'manifest display should be standalone so the installed app has no bar under the tab bar');
   const browser = await chromium.launch();
   const errs = [];
   async function open(init) {
