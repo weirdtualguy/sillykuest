@@ -2,6 +2,10 @@
 
 Versions follow `SK.version` in `js/core.js`. The service worker cache name and `package.json` must match it (`node tests/repo.js` checks).
 
+## 3.2.2 - 2026-10-21
+
+- Fixed: restored fullscreen display mode (3.2.1 wrongly switched to standalone). Page background still matches the tab bar.
+
 ## 3.2.1 - 2026-10-21
 
 - Fixed: gap below the tab bar. Page background now matches the tab bar, and the app installs as standalone instead of fullscreen.
