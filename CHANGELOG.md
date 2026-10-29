@@ -2,6 +2,16 @@
 
 Versions follow `SK.version` in `js/core.js`. The service worker cache name and `package.json` must match it (`node tests/repo.js` checks).
 
+## 3.3.0 - 2026-10-29
+
+- Added: **Covenants Quiz** at `#/quiz`. Ten standalone questions (3 easy, 4 medium, 3 hard) drawn from a bank of 29 that restate facts the lessons already teach. No timer, no XP, nothing added to Review.
+- Added: a **share card**. The result is drawn on a canvas on the device (a 1200x675 PNG with score, title and one tick or cross per question) and shared with the Share sheet, saved as an image, or posted through an X compose link. A copyable text version carries an emoji row, so the result still shares well without the image. Nothing is uploaded.
+- Added: challenge links. `#/quiz/8` opens the quiz with "A friend scored 8/10. Can you beat it?".
+- Added: the score suggests a starting level ("Start the quest"), and the quiz is reachable from Practice and from the welcome screen.
+- Added: Open Graph and Twitter card tags (`assets/og.png`) so a link to the app previews well on X.
+- Changed: `tests/repo.js` lets exactly one file (`js/ui/covenant-quiz.js`) name a URL; `fetch` and XHR stay banned everywhere.
+- Added: `tests/covenant-quiz.js` (bank and ladder checks) and `tests/covenant-quiz-browser.js` (plays a round, checks the card, the share text and the CSP).
+
 ## 3.2.5 - 2026-10-21
 
 - Changed: app icon ghost now has four legs, matching the in-app mascot.

@@ -1,6 +1,6 @@
 {
   "name": "sillykuest",
-  "version": "3.2.5",
+  "version": "3.3.0",
   "description": "A game-like course that teaches Kaspa, Silverscript and covenants to complete beginners. Vanilla JS, offline, no build step.",
   "private": true,
   "author": "weirdtualguy",
@@ -20,8 +20,8 @@
   },
   "scripts": {
     "serve": "python3 -m http.server 8080",
-    "test": "node tests/validate.js && node tests/vibe.js && node tests/repo.js",
-    "test:browser": "node tests/v3.js && node tests/gentle.js && node tests/qtypes.js && node tests/heist.js && node tests/ux.js && node tests/install.js && node tests/fullscreen.js && node tests/offline.js && node tests/browser.js"
+    "test": "node tests/validate.js && node tests/vibe.js && node tests/covenant-quiz.js && node tests/repo.js",
+    "test:browser": "node tests/covenant-quiz-browser.js && node tests/v3.js && node tests/gentle.js && node tests/qtypes.js && node tests/heist.js && node tests/ux.js && node tests/install.js && node tests/fullscreen.js && node tests/offline.js && node tests/browser.js"
   },
   "devDependencies": {
     "playwright": "^1.50.0"

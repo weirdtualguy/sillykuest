@@ -25,6 +25,7 @@ jobs:
           node-version: 22
       - run: node tests/validate.js
       - run: node tests/vibe.js
+      - run: node tests/covenant-quiz.js
       - run: node tests/repo.js
 
   deploy:

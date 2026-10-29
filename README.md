@@ -25,6 +25,7 @@
 - **A quest of 6 worlds**: 34 short lessons, 163 questions in 9 types, and a boss fight per world.
 - **Play before you read**: 12 interactive toys and 9 annotated contracts you read one line at a time. Tap a line and Sil explains it.
 - **Practice that sticks**: a Review bank for your slips, Daily five, a Code workout, **Vibe Check** (find the line an AI got wrong) and **Vault Heist** (write the rule, then watch it run against thieves).
+- **Covenants Quiz**: ten questions, a score and a share card. Open `#/quiz`, no lessons needed.
 - **A pocket reference**: 61 dictionary terms, 51 opcodes and a cheat sheet. Any term in a lesson is tappable.
 - **Kind by design**: no hearts, no punishment, a daily goal you cannot lose. Light and dark themes, reduced motion, keyboard and screen reader support.
 - **Yours alone**: installable, works offline, no account, no tracking. Progress stays in your browser, with a portable progress code.

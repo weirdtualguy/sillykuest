@@ -47,7 +47,10 @@ const text = all.filter(f => /\.(js|css|html|md|json|yml|yaml|webmanifest|txt)$/
 const banned = [[new RegExp('S' + 'SOT', 'i'), 'mentions the old source document'], [new RegExp('from the ' + 'docs', 'i'), 'carries the removed "from the docs" label']];
 text.forEach(f => { const s = read(f); banned.forEach(([re, why]) => ok(!re.test(s), f + ' ' + why)); });
 all.filter(f => /^(js|css)\//.test(f) && f.endsWith('.js')).forEach(f => {
-  const s = read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  let s = read(f).replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+  /* The only file allowed to name a URL is the share card: the app's own address (for the link in a post), the X compose page
+     opened when someone taps "Post on X", and the SVG namespace the mascot image needs. fetch and XHR stay banned everywhere. */
+  if (f === 'js/ui/covenant-quiz.js') s = s.split('https://weirdtualguy.github.io/sillykuest/').join('').split('https://x.com/intent/post').join('').split('http://www.w3.org/2000/svg').join('');
   ok(!/\bfetch\s*\(|XMLHttpRequest|WebSocket|sendBeacon|https?:\/\//.test(s), f + ' makes or names a network request (the app must stay offline-only)');
   ok(!/\beval\s*\(|\bnew\s+Function\b|\bFunction\s*[.(]/.test(s), f + ' uses eval or the Function constructor (blocked by the CSP)');
 });

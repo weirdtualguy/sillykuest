@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   var SK = (window.SK = window.SK || {});
-  SK.version = '3.2.5';
+  SK.version = '3.3.0';
   /* The Kaspa address people can send KAS to. Shown in the Support sheet (You tab, Learn footer). */
   SK.DONATE = 'kaspa:qp26rvw8t7qxl2kyu70us2tptz3u4p09f6h6l4k4gxlc40uau2m0xvjjw9whl';
 
@@ -124,7 +124,7 @@
     return {
       v: 2, mig: SK.KEYSHIFTS.length, xp: 0, streak: 0, best: 0, last: null, today: { d: null, xp: 0 },
       done: {}, bosses: {}, mistakes: [], badges: {}, resume: {}, rs: {},
-      stats: { ok: 0, total: 0, bug: 0 },
+      stats: { ok: 0, total: 0, bug: 0 }, quiz: { best: 0, plays: 0 },
       set: { sound: true, theme: 'system', openAll: false, motion: true },
       level: null
     };
@@ -147,6 +147,7 @@
     if (isObj(o.badges)) for (k in o.badges) if (/^[a-z0-9-]{1,24}$/.test(k) && o.badges[k]) d.badges[k] = cnt(o.badges[k]) || 1;
     if (isObj(o.resume)) for (k in o.resume) if (/^\d-\d$/.test(k) && cnt(o.resume[k]) > 0) d.resume[k] = cnt(o.resume[k]);
     if (isObj(o.rs)) for (k in o.rs) if (d.resume[k] && isObj(o.rs[k])) d.rs[k] = { m: cnt(o.rs[k].m), t: cnt(o.rs[k].t), o: cnt(o.rs[k].o) };
+    if (isObj(o.quiz)) d.quiz = { best: SK.clamp(cnt(o.quiz.best), 0, 10), plays: cnt(o.quiz.plays) };
     if (isObj(o.stats)) ['ok', 'total', 'bug', 'build', 'heist'].forEach(function (n) { if (o.stats[n] !== undefined) d.stats[n] = cnt(o.stats[n]); });
     if (isObj(o.set)) {
       ['sound', 'openAll', 'motion', 'seenEnd', 'installNo', 'fullscreen'].forEach(function (n) { if (typeof o.set[n] === 'boolean') d.set[n] = o.set[n]; });

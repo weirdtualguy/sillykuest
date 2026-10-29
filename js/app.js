@@ -111,13 +111,14 @@
     var hash = location.hash || '#/learn';
     var parts = hash.replace(/^#\/?/, '').split('/'), r = parts[0] || 'learn', a = parts[1], b = parts[2];
     var playerRoutes = { lesson: 1, boss: 1, review: 1, daily: 1, code: 1, vibe: 1, heist: 1 };
+    var isQuizPlay = r === 'quiz' && a === 'play';
     var isPr = r === 'review' || r === 'daily' || r === 'code' || r === 'vibe' || r === 'heist';
-    if (SK.activePlayer && !playerRoutes[r]) SK.activePlayer.close();
+    if (SK.activePlayer && !playerRoutes[r] && !isQuizPlay) SK.activePlayer.close();
 
-    if (playerRoutes[r]) {
+    if (playerRoutes[r] || isQuizPlay) {
       if (!SK.activePlayer) SK.backTo = curHash;
-      var under = isPr || /practice/.test(SK.backTo || '') ? 'practice' : 'learn';
-      if (activeTab !== under || !screenEl.firstChild) mount(under, under === 'practice' ? SK.screens.practice() : SK.screens.learn(), { keep: !!screenEl.firstChild });
+      var under = isPr || isQuizPlay || /practice|quiz/.test(SK.backTo || '') ? 'practice' : 'learn';
+      if (activeTab !== under || !screenEl.firstChild) mount(under, isQuizPlay ? SK.screens.quiz() : under === 'practice' ? SK.screens.practice() : SK.screens.learn(), { keep: !!screenEl.firstChild });
       var cfg = null, toast = null;
       if (r === 'lesson') {
         var l = SK.lesson(a);
@@ -138,6 +139,8 @@
         cfg = { kind: 'practice', id: 'vibe', title: 'Vibe Check', color: '#FF8A5B', steps: SK.vibeSteps(5) };
       } else if (r === 'heist') {
         cfg = { kind: 'practice', id: 'heist', title: 'Vault Heist', color: '#2BB8A3', steps: SK.heistSteps() };
+      } else if (isQuizPlay) {
+        cfg = { kind: 'quiz', id: 'quiz', title: 'Covenants Quiz', color: '#9A8CFF', steps: SK.quizSteps() };
       } else if (r === 'daily') {
         var pool = SK.practicePool(true); if (!pool.length) pool = SK.practicePool(false).slice(0, 12);
         cfg = { kind: 'practice', id: 'daily', title: 'Daily five', color: '#FFCB45', steps: keysToSteps(SK.shuffle(pool).slice(0, 5)) };
@@ -151,6 +154,7 @@
     if (curKey != null) scrollMem[curKey] = window.scrollY;
     var y = key != null && scrollMem[key] != null ? scrollMem[key] : 0;
     if (r === 'practice') mount('practice', SK.screens.practice(), { y: y });
+    else if (r === 'quiz') mount('practice', SK.screens.quiz(a), { y: 0 });
     else if (r === 'lab') mount('lab', a === 'ex' ? SK.screens.labEx(b) : a === 'toy' ? SK.screens.labToy(b) : SK.screens.lab(), { y: y });
     else if (r === 'words') mount('words', SK.screens.words('words', a), { y: y });
     else if (r === 'ops') mount('words', SK.screens.words('ops'), { y: y });
@@ -175,7 +179,7 @@
     build();
     window.addEventListener('hashchange', SK.route);
     SK.route();
-    if (!SK.state.level && !Object.keys(SK.state.done).length && !/[?&]qa=1/.test(location.search)) SK.welcome(function (go) { if (go) location.hash = go; else SK.route(); });
+    if (!SK.state.level && !Object.keys(SK.state.done).length && !/[?&]qa=1/.test(location.search) && !/^#\/quiz/.test(location.hash)) SK.welcome(function (go) { if (go) location.hash = go; else SK.route(); });
     SK.save(); /* probe: if storage is blocked, SK.saveOk turns false and Learn says so */
     if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) {
       var had = !!navigator.serviceWorker.controller;

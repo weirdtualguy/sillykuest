@@ -17,6 +17,12 @@ js/app.js                  shell and hash router
 tests/                     validate, vibe, repo (Node only) | browser, qtypes, ux, heist, v3, gentle, offline (Playwright)
 ```
 
+The Covenants Quiz (`#/quiz`) has its own data and UI:
+
+- `js/data/covenant-quiz.js` holds the bank (`SK.quizBank`), the result ladder (`SK.quizTiers`) and the draw (`SK.quizSteps`). Each question restates a fact a lesson already teaches, worded so a newcomer can answer it cold. `src` names that lesson. Add the lesson fact first, then the quiz question. Author `mc` answers in position 0, the player shuffles them. Keep tiers balanced: a round draws 3 easy, 4 medium and 3 hard, so each tier needs at least twice that many.
+- `js/ui/covenant-quiz.js` is the landing screen, the result view and the share card (canvas). It is the one file allowed to name a URL (`tests/repo.js` enforces that). `fetch` stays banned.
+- The round runs in the player with `kind: 'quiz'`: no XP, no streak, no Review entries. `node tests/covenant-quiz.js` checks the bank.
+
 Two practice modes have their own data:
 
 - `js/ui/heist.js` is Vault Heist (`#/heist`). The learner builds `require` lines from chips and the rule is really evaluated against thief and honest transactions (`SK.heist.eval`). Levels are rows in `C`; every solution line must come from a contract in `js/data/examples.js`.

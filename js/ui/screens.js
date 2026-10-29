@@ -272,6 +272,7 @@
       return h('a', { class: 'pcard card', href: href }, h('span', { class: 'pc-ic', style: { background: color }, html: SK.icon(icon, 28) }),
         h('div', { class: 'pc-b' }, h('h3', title), h('p', text)), h('span', { class: 'pc-go', html: SK.icon('play', 18) }));
     }
+    root.appendChild(card('var(--sky)', 'target', 'Covenants Quiz', 'Ten questions, a score and a card to share. No lessons needed.' + (st.quiz && st.quiz.plays ? ' Your best: ' + st.quiz.best + '/10.' : ''), '#/quiz'));
     if (m.length) root.appendChild(card('var(--coral)', 'bug', 'Review your slips', m.length + ' question' + (m.length === 1 ? '' : 's') + ' you missed. Get them right to clear them.', '#/review'));
     else root.appendChild(h('div', { class: 'pcard card off' }, h('span', { class: 'pc-ic', html: SK.icon('bug', 28) }), h('div', { class: 'pc-b' }, h('h3', 'Review your slips'), h('p', 'Nothing to review. Missed questions land here.')), h('span', { class: 'pc-go', html: SK.icon('check', 18) })));
     root.appendChild(anyDone ? card('var(--sun)', 'bolt', 'Daily five', 'Five random questions from lessons you have finished.', '#/daily') : lockedCard('var(--sun)', 'bolt', 'Daily five', 'Unlocks after your first lesson. Then it mixes questions from everything you have learned.'));
@@ -502,7 +503,8 @@
       opt('new', 'envelope', 'var(--teal)', 'Brand new to crypto', 'Start from the very beginning.', '#/lesson/1-1'),
       opt('basics', 'coin', 'var(--sun)', 'I know the basics', 'I have used wallets and coins.', '#/lesson/1-1'),
       opt('builder', 'code', 'var(--violet)', 'I build things', 'I write code. Let me test out of the easy parts.', null),
-      h('p', { class: 'w-skip' }, h('button', { type: 'button', class: 'btn alt sm', onclick: function () { pick('new', null); } }, 'Look around first'))));
+      h('p', { class: 'w-skip' }, h('button', { type: 'button', class: 'btn alt sm', onclick: function () { pick('new', null); } }, 'Look around first'), ' ',
+        h('button', { type: 'button', class: 'btn alt sm', onclick: function () { ov.remove(); document.body.classList.remove('no-scroll'); done('#/quiz'); } }, 'Take the 2-minute quiz'))));
     document.body.appendChild(ov); document.body.classList.add('no-scroll');
     ov.focus({ preventScroll: true });
   };

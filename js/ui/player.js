@@ -23,7 +23,7 @@
     if (SK.activePlayer) SK.activePlayer.close();
     var q = cfg.steps.map(function (s) { return { s: s.step, key: s.key, retry: false }; });
     var i = (cfg.kind === 'lesson' && cfg.from > 0 && cfg.from < q.length) ? cfg.from : 0, resumed = i > 0, rs0 = resumed && SK.state.rs ? SK.state.rs[cfg.id] : null;
-    var dir = 'fwd', mistakes = rs0 ? rs0.m : 0, quizTotal = rs0 ? rs0.t : 0, quizOk = rs0 ? rs0.o : 0, hp = 100, checked = false, ready = false, inst = null, finished = false;
+    var qlog = [], dir = 'fwd', mistakes = rs0 ? rs0.m : 0, quizTotal = rs0 ? rs0.t : 0, quizOk = rs0 ? rs0.o : 0, hp = 100, checked = false, ready = false, inst = null, finished = false;
     var firstQuizCount = q.filter(function (x) { return SK.isQuiz(x.s); }).length || 1;
 
     var root = h('div', { class: 'player kind-' + cfg.kind + (cfg.world ? ' world-' + cfg.world : ''), style: { '--w': cfg.color || 'var(--teal)' }, role: 'dialog', 'aria-modal': 'true', 'aria-label': cfg.title });
@@ -57,7 +57,7 @@
     SK.activePlayer = api;
 
     function close() { root.remove(); document.body.classList.remove('no-scroll'); document.removeEventListener('keydown', onKey); if (SK.activePlayer === api) SK.activePlayer = null; }
-    function dest() { return SK.backTo || ('#/' + (cfg.kind === 'practice' ? 'practice' : 'learn')); }
+    function dest() { if (cfg.kind === 'quiz') return '#/quiz'; return SK.backTo || ('#/' + (cfg.kind === 'practice' ? 'practice' : 'learn')); }
     function leave() {
       if (finished) { close(); if (cfg.kind === 'lesson') SK.focusNext = true; location.hash = dest(); return; }
       if (i === 0 && quizTotal === 0) { close(); location.hash = dest(); return; }
@@ -120,15 +120,15 @@
       if (checked) return; checked = true;
       var item = q[i], step = item.s;
       if (!item.retry) {
-        quizTotal++; SK.state.stats.total++;
-        if (ok) { quizOk++; SK.state.stats.ok++; if (step.t === 'bug') SK.state.stats.bug++; if (step.t === 'build') SK.state.stats.build = (SK.state.stats.build || 0) + 1; } else { mistakes++; paintSlips(); }
+        quizTotal++; if (cfg.kind === 'quiz') qlog.push(!!ok); else SK.state.stats.total++;
+        if (ok) { quizOk++; if (cfg.kind !== 'quiz') { SK.state.stats.ok++; if (step.t === 'bug') SK.state.stats.bug++; if (step.t === 'build') SK.state.stats.build = (SK.state.stats.build || 0) + 1; } } else { mistakes++; paintSlips(); }
         if (cfg.kind === 'boss') {
           if (ok) { hp = Math.max(0, hp - 100 / firstQuizCount); hpBar.style.width = hp + '%'; }
           mon.classList.remove('hit', 'laugh'); void mon.offsetWidth; mon.classList.add(ok ? 'hit' : 'laugh');
         }
       }
       if (item.key) { if (ok) dropMistake(item.key); else addMistake(item.key); }
-      if (!ok && !item.retry && r.requeue !== false) q.push({ s: step, key: item.key, retry: true });
+      if (!ok && !item.retry && r.requeue !== false && cfg.kind !== 'quiz') q.push({ s: step, key: item.key, retry: true });
       SK.sfx(ok ? 'ok' : 'bad'); if (!ok) SK.buzz([30, 40, 30]); else SK.buzz(15);
       SK.save();
       var title = SK.pick(ok ? GOOD : BAD);
@@ -146,8 +146,18 @@
     }
 
     /* ---------- completion ---------- */
+    /* The Covenants Quiz is outside the quest: no XP, no streak, nothing added to Review. It only remembers your best score. */
+    function finishQuiz() {
+      var score = qlog.filter(Boolean).length, Q = SK.state.quiz;
+      Q.plays++; Q.best = Math.max(Q.best, score); SK.save();
+      SK.clear(main); foot.hidden = true;
+      main.appendChild(h('div', { class: 'p-in' }, SK.quizResultView({ log: qlog, steps: q.map(function (x) { return x.s; }),
+        leave: function (hash) { close(); if (location.hash === hash) SK.route(); else location.hash = hash; } })));
+      main.scrollTop = 0; SK.sfx('done'); if (score >= 7) SK.confetti(score === 10 ? 60 : 36);
+    }
     function finish() {
       finished = true; progress(); bar.style.width = '100%';
+      if (cfg.kind === 'quiz') return finishQuiz();
       var S = SK.state, res = { xp: 0, stars: 0, title: '', sub: '', mood: 'yay', pass: true, cleared: false, next: null };
       var acc = quizTotal ? Math.round(quizOk / quizTotal * 100) : 100;
       if (cfg.kind === 'lesson') {
